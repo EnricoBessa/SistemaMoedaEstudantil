@@ -53,3 +53,34 @@ O **Sistema de Moeda Estudantil** busca incentivar o reconhecimento do mérito e
 ---
 
 ## Entregas da Sprint 2 (Lab03S02)
+
+### 1. Modelo Entidade-Relacionamento (Modelo ER)
+* Definição e mapeamento do esquema relacional contemplando as entidades: `Usuario`, `Aluno`, `Professor`, `Empresa Parceira`, `Instituição`, `Vantagem` e `Transação`.
+  * ![Diagrama Entidade-Relacionamento](./Documentos/Diagrama%20Entidade-Relacionamento.png)
+
+### 2. Diagramas de Sequência
+* **Envio de Moedas (Professor -> Aluno):**
+  * ![Diagrama de Sequência - Envio de Moedas](./Documentos/Diagrama%20de%20Sequência%20—%20Envio%20de%20Moedas.png)
+* **Resgate de Vantagens (Aluno -> Empresa Parceira):**
+  * ![Diagrama de Sequência - Resgate de Vantagem](./Documentos/Diagrama%20de%20Sequência%20—%20Resgate%20de%20Vantagem.png)
+
+### 3. Estratégia de Acesso ao Banco de Dados e Persistência
+* Utilização de **Spring Data JPA / Hibernate** para o mapeamento objeto-relacional (ORM).
+* Implementação do padrão de repositórios (`JpaRepository`) para desacoplamento e operações de CRUD seguras.
+
+---
+
+## Entregas da Sprint 3 (Lab03S03)
+
+### 1. Conclusão dos CRUDs e Regras de Negócio
+* **Módulo Aluno & Empresa Parceira:** Implementação completa dos endpoints de cadastro, listagem, atualização e remoção (`AlunoController`, `EmpresaParceiraController`).
+* **Módulo Professor & Vantagens:** Gestão de professores vinculados a instituições com saldo semestral acumulável e cadastro de vantagens por empresas parceiras.
+* **Módulo de Transações:** Lógica de envio de moedas (com validação de saldo e mensagem obrigatória) e resgate de vantagens com geração automática de código de cupom único.
+
+### 2. Tecnologias Utilizadas (Stack)
+* **Linguagem:** Java (JDK 17+)
+* **Framework:** Spring Boot (Spring Web, Spring Data JPA)
+* **Banco de Dados:** H2 / Relacional via ORM
+* **Arquitetura:** MVC (Model-View-Controller) com divisão clara entre Controllers, Models e Repositories.
+
+---
