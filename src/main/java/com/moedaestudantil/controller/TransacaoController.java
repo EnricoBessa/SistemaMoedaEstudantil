@@ -26,6 +26,9 @@ public class TransacaoController {
     @Autowired
     private VantagemRepository vantagemRepository;
 
+    @Autowired
+    private NotificacaoRepository notificacaoRepository;
+
     // 1. ENVIO DE MOEDAS (Professor -> Aluno)
     @PostMapping("/enviar")
     public ResponseEntity<?> enviarMoedas(@RequestParam String professorCpf,
@@ -67,6 +70,15 @@ public class TransacaoController {
 
         transacaoRepository.save(transacao);
 
+        // TODO (pendente do épico): isto cria a notificação de forma síncrona, direto aqui no controller.
+        // O planejado é publicar um MoedaRecebidaEvent e tratar com um @EventListener @Async em TransacaoService,
+        // para não bloquear a resposta HTTP nem acoplar a criação da notificação ao fluxo de envio de moedas.
+        // Quando essa evolução for feita, pode remover este comentário e o bloco abaixo sai daqui.
+        Notificacao notificacao = new Notificacao();
+        notificacao.setAluno(aluno);
+        notificacao.setMensagem("Você recebeu " + quantidade + " moedas de " + professor.getNome() + ": \"" + motivo + "\"");
+        notificacaoRepository.save(notificacao);
+
         return ResponseEntity.ok("Moedas enviadas com sucesso! Notificação por email disparada para " + aluno.getEmail());
     }
 
@@ -101,6 +113,14 @@ public class TransacaoController {
         transacao.setMotivo("Resgate de vantagem: " + vantagem.getDescricao());
 
         transacaoRepository.save(transacao);
+
+        // TODO (pendente do épico): mesmo ponto do comentário em enviarMoedas() acima — criação síncrona
+        // que deve virar um evento assíncrono (ex.: VantagemResgatadaEvent) quando essa parte for feita.
+        // Remova este comentário junto com o de enviarMoedas() quando migrar os dois.
+        Notificacao notificacao = new Notificacao();
+        notificacao.setAluno(aluno);
+        notificacao.setMensagem("Resgate confirmado: " + vantagem.getDescricao() + " (cupom " + codigoCupom + ")");
+        notificacaoRepository.save(notificacao);
 
         return ResponseEntity.ok(transacao);
     }
