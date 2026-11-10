@@ -84,3 +84,45 @@ O **Sistema de Moeda Estudantil** busca incentivar o reconhecimento do mérito e
 * **Arquitetura:** MVC (Model-View-Controller) com divisão clara entre Controllers, Models e Repositories.
 
 ---
+
+## Como usar / rodar o projeto
+
+O projeto já está organizado como um projeto Maven padrão (`pom.xml` na raiz, código em `src/main/java/com/moedaestudantil/...`, front-end estático em `src/main/resources/static/index.html`). A pasta `src/back/` com as classes soltas antigas ficou obsoleta e pode ser apagada quando quiser.
+
+### 1. Pré-requisitos
+* **JDK 17+** instalado (`java -version` para conferir)
+* **Maven 3.8+** instalado (`mvn -version` para conferir)
+
+### 2. Rodando a aplicação
+Na raiz do projeto:
+```bash
+mvn spring-boot:run
+```
+Ou, pela IDE (IntelliJ/VS Code com extensão Java), importe o projeto como Maven e execute a classe `SistemaMoedaEstudantilApplication` (método `main`).
+
+A aplicação sobe em `http://localhost:8080` — abrindo essa URL no navegador já aparece o site completo (login, cadastro, dashboards de aluno/professor/empresa), servido pelo próprio Spring Boot. O console do H2 fica em `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:moedaestudantil`, usuário `sa`, sem senha).
+
+Como o banco é H2 em memória, os dados somem a cada reinício — mas um `DataSeeder` (`src/main/java/com/moedaestudantil/config/DataSeeder.java`) popula automaticamente algumas instituições, um aluno, um professor, uma empresa parceira e duas vantagens assim que a aplicação sobe, então já dá pra testar o fluxo completo sem cadastrar nada manualmente.
+
+### 3. Contas de demonstração (senha `123456` para todas)
+| Papel | E-mail |
+|---|---|
+| Aluno | `camila.duarte@puc.br` |
+| Professor | `ricardo.alves@puc.br` |
+| Empresa parceira | `contato@ru.com.br` |
+
+### 4. Testando os endpoints diretamente (opcional)
+A interface já cobre o uso normal, mas a API REST continua acessível para quem quiser testar via `curl`/Postman:
+```bash
+curl http://localhost:8080/api/alunos
+curl -X POST http://localhost:8080/api/auth/login -H "Content-Type: application/json" -d "{\"email\":\"camila.duarte@puc.br\",\"senha\":\"123456\",\"tipo\":\"ALUNO\"}"
+curl -X POST "http://localhost:8080/api/transacoes/enviar?professorCpf=11111111111&alunoCpf=22222222222&quantidade=100&motivo=Participacao"
+```
+
+### 5. Limitações conhecidas (herdadas do escopo acadêmico original)
+* Senhas ficam em texto puro no banco (sem hashing) — adequado só para fins didáticos.
+* Login não gera token/sessão real no servidor; o front-end guarda o usuário logado no `localStorage` do navegador.
+* Não há envio real de e-mail (o enunciado pede notificação por e-mail ao aluno e à empresa parceira — isso ficou como próximo passo).
+* Upload de foto da vantagem não foi implementado (campo visual apenas).
+
+---

@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Besiktas — Wireframe</title>
+<style>
+  :root{
+    --bg: #f7f4fb;
+    --card: #ffffff;
+    --ink: #241a35;
+    --ink-soft: #6b5f85;
+    --purple-deep: #1f1033;
+    --purple: #3a2159;
+    --purple-2: #553382;
+    --purple-light: #efe6fb;
+    --gold: #f4bc1c;
+    --gold-light: #ffe49a;
+    --gold-deep: #96690a;
+    --teal: #1c9e82;
+    --teal-ink: #0a5443;
+    --danger: #e24b63;
+    --border: #e7e0f2;
+    --radius: 16px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family: "Segoe UI", system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+  }
+  svg.defs{ position:absolute; width:0; height:0; }
+
+  .topbar{
+    background: linear-gradient(120deg, var(--purple-deep), var(--purple));
+    color:#fff; padding:14px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .topbar .brand{display:flex; align-items:center; gap:10px; font-weight:700; font-size:18px;}
+
+  .coin{ display:inline-block; }
+  .coin.bounce{ animation: bounce 1.8s ease-in-out infinite; }
+  @keyframes bounce{ 0%,100%{ transform:translateY(0) rotate(0deg);} 50%{ transform:translateY(-6px) rotate(-6deg);} }
+
+  .falling-coins{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
+  .falling-coins svg{ position:absolute; top:-60px; opacity:.55; animation-name: fall; animation-timing-function: linear; animation-iteration-count: infinite; }
+  @keyframes fall{
+    0%{ transform:translateY(0) rotate(0deg); opacity:0; }
+    8%{ opacity:1; }
+    100%{ transform:translateY(640px) rotate(380deg); opacity:1; }
+  }
+
+  nav.tabs{
+    display:flex; gap:6px; background:#fff; padding:10px 28px; border-bottom:1px solid var(--border);
+    position:sticky; top:0; z-index:5; overflow-x:auto; -webkit-overflow-scrolling:touch;
+  }
+  nav.tabs button{
+    border:none; background:transparent; padding:10px 16px; border-radius:999px;
+    font-size:14px; font-weight:600; color:var(--ink-soft); cursor:pointer;
+    white-space:nowrap; flex-shrink:0;
+  }
+  nav.tabs button.active{ background: var(--purple-deep); color:#fff; }
+  main{ max-width:1080px; margin:0 auto; padding:28px; }
+  .screen{ display:none; }
+  .screen.active{ display:block; animation: fade .25s ease; }
+  @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .hud{
+    position:relative; overflow:hidden;
+    background: linear-gradient(135deg, var(--purple-deep), var(--purple-2));
+    color:#fff; border-radius: var(--radius); padding:26px 30px;
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    margin-bottom:24px;
+  }
+  .hud::after{
+    content:""; position:absolute; inset:0;
+    background: radial-gradient(420px 120px at 85% -20%, rgba(244,188,28,.35), transparent 70%);
+    pointer-events:none;
+  }
+  .hud .who{ font-size:14px; opacity:.75; margin-bottom:4px;}
+  .hud .name{ font-size:22px; font-weight:700; display:flex; align-items:center; gap:10px;}
+  .level-badge{
+    font-size:11px; font-weight:800; background: rgba(244,188,28,.18); color: var(--gold-light);
+    border:1px solid rgba(244,188,28,.4); padding:3px 10px; border-radius:999px; letter-spacing:.03em;
+  }
+  .hud .balance{ text-align:right; position:relative; z-index:1; }
+  .hud .balance-row{ display:flex; align-items:center; gap:10px; justify-content:flex-end; }
+  .hud .balance .num{ font-size:34px; font-weight:800; color: var(--gold-light); }
+  .hud .balance .label{ font-size:12px; opacity:.75; text-transform:uppercase; letter-spacing:.06em;}
+  .streak{ font-size:12px; color: var(--gold-light); margin-top:6px; opacity:.9; }
+
+  .xpbar{ height:10px; background:rgba(255,255,255,.15); border-radius:999px; margin-top:14px; overflow:hidden; position:relative; }
+  .xpbar i{ display:block; height:100%; background: linear-gradient(90deg, var(--gold-deep), var(--gold), var(--gold-light)); border-radius:999px; position:relative; }
+  .xpbar i::after{
+    content:""; position:absolute; inset:0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+    width:40%; animation: shine 2.4s ease-in-out infinite;
+  }
+  @keyframes shine{ 0%{ transform:translateX(-100%);} 100%{ transform:translateX(250%);} }
+
+  .grid{ display:grid; gap:18px; align-items:start; }
+  .grid.cols-2{ grid-template-columns: 1fr 1fr; }
+  .grid.cols-3{ grid-template-columns: repeat(3, 1fr); }
+
+  .card{
+    background: var(--card); border:1px solid var(--border); border-radius: var(--radius);
+    padding:20px 22px;
+  }
+  .card h3{ margin:0 0 4px; font-size:15px; }
+  .card .muted{ color: var(--ink-soft); font-size:13px; margin:0 0 14px;}
+
+  .badge{
+    display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700;
+    padding:4px 10px; border-radius:999px; background: var(--purple-light); color: var(--purple-2);
+  }
+  .badge.gold{ background:#fdf0cf; color:var(--gold-deep); }
+
+  .timeline{ display:flex; flex-direction:column; gap:12px; }
+  .timeline .row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px dashed var(--border); }
+  .timeline .row:last-child{ border-bottom:none; }
+  .ticon{
+    width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:14px; flex-shrink:0;
+  }
+  .ticon.in{ background: var(--purple-light); color: var(--purple-2); }
+  .ticon.out{ background:#fdeceb; color: var(--danger); }
+  .trow-main{ flex:1; }
+  .trow-title{ font-weight:600; font-size:14px; }
+  .trow-sub{ font-size:12px; color:var(--ink-soft); }
+  .trow-amt{ font-weight:800; font-size:14px; }
+  .trow-amt.in{ color: var(--purple-2); }
+  .trow-amt.out{ color: var(--danger); }
+
+  .store-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap:16px; }
+  .reward-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    overflow:hidden; display:flex; flex-direction:column; transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .reward-card:hover{ transform:translateY(-3px); box-shadow:0 10px 22px rgba(58,33,89,.14); }
+  .reward-img{
+    height:92px; background: linear-gradient(135deg, var(--purple-light), #fbf1da);
+    display:flex; align-items:center; justify-content:center; color: var(--purple-2); font-size:12px;
+  }
+  .reward-body{ padding:14px; display:flex; flex-direction:column; gap:8px; flex:1; }
+  .reward-title{ font-weight:700; font-size:14px; }
+  .reward-partner{ font-size:12px; color:var(--ink-soft); }
+  .reward-foot{ margin-top:auto; display:flex; align-items:center; justify-content:space-between; }
+  .price{ display:flex; align-items:center; gap:5px; font-weight:800; color:var(--gold-deep); font-size:14px;}
+
+  button.cta{
+    border:none; background: linear-gradient(135deg, var(--purple-2), var(--purple-deep)); color:#fff; font-weight:700; font-size:13px;
+    padding:9px 14px; border-radius:10px; cursor:pointer; position:relative; overflow:hidden;
+    box-shadow: 0 2px 0 rgba(0,0,0,.15);
+  }
+  button.cta:hover{ filter:brightness(1.08); }
+  button.cta:active{ transform:translateY(1px); box-shadow:none; }
+  button.cta.locked{ background:#d9d4e3; color:#847b96; cursor:not-allowed; box-shadow:none; }
+  button.cta.ghost{ background:transparent; border:1px solid var(--border); color:var(--ink); box-shadow:none;}
+
+  form .field{ margin-bottom:14px; display:flex; flex-direction:column; gap:6px; }
+  form label{ font-size:12px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em;}
+  form input, form select, form textarea{
+    border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:14px; font-family:inherit;
+    background:#fdfbff;
+  }
+  form textarea{ resize:vertical; min-height:70px; }
+
+  .login-wrap{ max-width:420px; margin:60px auto; position:relative; z-index:1; }
+  .login-card{ background:var(--card); border:1px solid var(--border); border-radius:20px; padding:34px; text-align:center; box-shadow:0 20px 40px rgba(58,33,89,.08); }
+  .roles{ display:flex; gap:8px; margin:16px 0 20px; }
+  .roles button{
+    flex:1; border:1px solid var(--border); background:#fdfbff; border-radius:12px; padding:10px 6px;
+    font-size:12px; font-weight:700; color:var(--ink-soft); cursor:pointer;
+  }
+  .roles button.active{ border-color:var(--purple-2); color:var(--purple-2); background: var(--purple-light); }
+
+  .hint{ font-size:11px; color:var(--ink-soft); margin-top:18px; }
+
+  .section-title{ display:flex; align-items:center; justify-content:space-between; margin:30px 0 14px; }
+  .section-title h2{ font-size:16px; margin:0; }
+
+  .coupon{
+    border:2px dashed var(--gold); border-radius:14px; padding:16px 18px; background:#fffaeb;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .coupon code{ font-weight:800; letter-spacing:.08em; font-size:16px; color: var(--gold-deep); }
+
+  .toast{
+    position:absolute; top:18px; right:18px; background:#fff; border:1px solid var(--border);
+    border-radius:12px; padding:10px 14px; display:flex; align-items:center; gap:10px;
+    box-shadow:0 10px 24px rgba(58,33,89,.14); font-size:13px; font-weight:600;
+    color: var(--ink); z-index:2;
+  }
+  .toast .trophy{ font-size:18px; }
+
+  @media (max-width: 860px){
+    main{ padding:20px 16px; }
+    .grid.cols-2, .grid.cols-3, .store-grid{ grid-template-columns: 1fr; }
+    .hud{ flex-direction:column; align-items:flex-start; gap:12px; }
+    .hud .balance{ text-align:left; width:100%; }
+    .hud .balance-row{ justify-content:flex-start; }
+    .hud .name{ flex-direction:column; align-items:flex-start; gap:6px; }
+    .topbar{ padding:14px 16px; }
+    .topbar > div:last-child{ display:none; }
+    .toast{ position:static; margin-bottom:4px; align-self:flex-start; }
+    .login-wrap{ margin:32px auto; }
+  }
+  @media (max-width: 480px){
+    .roles{ flex-wrap:wrap; }
+    .roles button{ flex:1 1 calc(50% - 8px); }
+  }
+</style>
+</head>
+<body>
+
+<svg class="defs">
+  <defs>
+    <symbol id="coin-icon" viewBox="0 0 64 64">
+      <ellipse cx="32" cy="38" rx="27" ry="23" fill="#c9790a"/>
+      <circle cx="32" cy="30" r="27" fill="#f7b733" stroke="#6b3e04" stroke-width="3"/>
+      <circle cx="32" cy="30" r="19" fill="none" stroke="#6b3e04" stroke-width="2.5" stroke-dasharray="3 4" opacity=".7"/>
+      <text x="32" y="40" text-anchor="middle" font-size="28" font-weight="800" fill="#6b3e04" font-family="Segoe UI, Arial, sans-serif">$</text>
+      <path d="M17 18 Q22 10 32 10" stroke="#ffe9b0" stroke-width="4" stroke-linecap="round" fill="none"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="topbar">
+  <div class="brand">
+    <svg class="coin bounce" width="28" height="28"><use href="#coin-icon"/></svg>
+    Besiktas
+  </div>
+  <div style="font-size:13px; opacity:.8;">wireframe · navegação por abas (não é o app final)</div>
+</div>
+
+<nav class="tabs">
+  <button class="active" data-tab="login">Login</button>
+  <button data-tab="cadastro-aluno">Criar cadastro</button>
+  <button data-tab="aluno">Aluno</button>
+  <button data-tab="extrato">Extrato completo</button>
+  <button data-tab="perfil">Meu perfil</button>
+  <button data-tab="professor">Professor</button>
+  <button data-tab="empresa">Empresa parceira</button>
+  <button data-tab="cadastro-empresa">Cadastro empresa</button>
+  <button data-tab="vantagens-gerenciar">Gerenciar vantagens</button>
+  <button data-tab="confirmacao">Confirmação de resgate</button>
+</nav>
+
+<main>
+
+  <!-- LOGIN -->
+  <section class="screen active" id="login" style="position:relative; min-height:560px;">
+    <div class="falling-coins">
+      <svg width="26" height="26" style="left:4%; animation-duration:3.2s; animation-delay:0s;"><use href="#coin-icon"/></svg>
+      <svg width="18" height="18" style="left:11%; animation-duration:2.4s; animation-delay:.6s;"><use href="#coin-icon"/></svg>
+      <svg width="20" height="20" style="left:17%; animation-duration:3.8s; animation-delay:1.4s;"><use href="#coin-icon"/></svg>
+      <svg width="18" height="18" style="left:83%; animation-duration:2.8s; animation-delay:.3s;"><use href="#coin-icon"/></svg>
+      <svg width="28" height="28" style="left:90%; animation-duration:4.2s; animation-delay:1.6s;"><use href="#coin-icon"/></svg>
+      <svg width="20" height="20" style="left:96%; animation-duration:3s; animation-delay:.9s;"><use href="#coin-icon"/></svg>
+    </div>
+    <div class="login-wrap">
+      <div class="login-card">
+        <svg class="coin bounce" width="68" height="68" style="margin-bottom:14px;"><use href="#coin-icon"/></svg>
+        <h2 style="margin:0 0 4px;">Entrar</h2>
+        <p class="muted" style="margin:0 0 18px;">Acesse com o e-mail cadastrado pela sua instituição</p>
+        <div class="roles">
+          <button class="active">Aluno</button>
+          <button>Professor</button>
+          <button>Empresa parceira</button>
+        </div>
+        <form>
+          <div class="field"><label>E-mail</label><input type="email" placeholder="voce@instituicao.edu.br"></div>
+          <div class="field"><label>Senha</label><input type="password" placeholder="••••••••"></div>
+        </form>
+        <button class="cta" style="width:100%; padding:12px;">Entrar</button>
+        <p class="hint">Novo aluno? <b>Criar cadastro</b> · Instituição não listada? fale com o suporte.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CRIAR CADASTRO (ALUNO) -->
+  <section class="screen" id="cadastro-aluno">
+    <div class="login-wrap" style="max-width:560px;">
+      <div class="login-card" style="text-align:left;">
+        <div style="text-align:center;">
+          <svg class="coin bounce" width="56" height="56" style="margin-bottom:10px;"><use href="#coin-icon"/></svg>
+          <h2 style="margin:0 0 4px;">Criar cadastro de aluno</h2>
+          <p class="muted" style="margin:0 0 22px;">Leva menos de 2 minutos</p>
+        </div>
+        <form>
+          <div class="grid cols-2" style="gap:14px;">
+            <div class="field"><label>Nome completo</label><input placeholder="Camila Duarte"></div>
+            <div class="field"><label>E-mail</label><input type="email" placeholder="voce@instituicao.edu.br"></div>
+            <div class="field"><label>CPF</label><input placeholder="000.000.000-00"></div>
+            <div class="field"><label>RG</label><input placeholder="MG-00.000.000"></div>
+            <div class="field"><label>Senha</label><input type="password" placeholder="••••••••"></div>
+            <div class="field"><label>Curso</label><input placeholder="Eng. de Software"></div>
+          </div>
+          <div class="field"><label>Endereço</label><input placeholder="Rua, número, bairro, cidade"></div>
+          <div class="field">
+            <label>Instituição de ensino</label>
+            <select>
+              <option>PUC Minas</option>
+              <option>UFMG</option>
+              <option>Cefet-MG</option>
+              <option>Outra instituição parceira...</option>
+            </select>
+          </div>
+        </form>
+        <button class="cta" style="width:100%; padding:12px;">Criar conta</button>
+        <p class="hint" style="text-align:center;">Já tem conta? <b>Fazer login</b></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ALUNO -->
+  <section class="screen" id="aluno">
+    <div class="hud">
+      <div class="toast"><span class="trophy">🏆</span> +150 moedas recebidas agora</div>
+      <div>
+        <div class="who">Bem-vinda de volta</div>
+        <div class="name">Camila Duarte <span class="level-badge">Nível 4 · Colaboradora</span></div>
+        <div class="xpbar" style="width:240px;"><i style="width:62%"></i></div>
+        <div class="streak">🔥 6 reconhecimentos seguidos este semestre</div>
+      </div>
+      <div class="balance">
+        <div class="balance-row">
+          <svg class="coin" width="30" height="30"><use href="#coin-icon"/></svg>
+          <div class="num">1.240</div>
+        </div>
+        <div class="label">moedas disponíveis</div>
+      </div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Últimas moedas recebidas</h3>
+        <p class="muted">Reconhecimentos dos seus professores</p>
+        <div class="timeline">
+          <div class="row">
+            <div class="ticon in">+</div>
+            <div class="trow-main">
+              <div class="trow-title">Prof. Ricardo Alves</div>
+              <div class="trow-sub">"Ótima participação na apresentação da Sprint 02"</div>
+            </div>
+            <div class="trow-amt in">+150</div>
+          </div>
+          <div class="row">
+            <div class="ticon out">−</div>
+            <div class="trow-main">
+              <div class="trow-title">Resgate: Desconto RU</div>
+              <div class="trow-sub">Cupom gerado · 03/11</div>
+            </div>
+            <div class="trow-amt out">−80</div>
+          </div>
+          <div class="row">
+            <div class="ticon in">+</div>
+            <div class="trow-main">
+              <div class="trow-title">Profa. Milena Menezes</div>
+              <div class="trow-sub">"Entrega adiantada do diagrama de classes"</div>
+            </div>
+            <div class="trow-amt in">+100</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Meu cupom ativo</h3>
+        <p class="muted">Apresente no estabelecimento parceiro</p>
+        <div class="coupon">
+          <div>
+            <div style="font-size:12px; color:var(--ink-soft);">Desconto em mensalidade — Parceiro EduPay</div>
+            <code>8F3K2A91</code>
+          </div>
+          <span class="badge gold">válido</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <h2>Loja de vantagens</h2>
+      <span class="muted">ordenar por: menor custo</span>
+    </div>
+    <div class="store-grid">
+      <div class="reward-card">
+        <div class="reward-img">foto da vantagem</div>
+        <div class="reward-body">
+          <div class="reward-title">Desconto 15% no RU</div>
+          <div class="reward-partner">Restaurante Universitário</div>
+          <div class="reward-foot">
+            <div class="price"><svg class="coin" width="16" height="16"><use href="#coin-icon"/></svg> 80</div>
+            <button class="cta">Resgatar</button>
+          </div>
+        </div>
+      </div>
+      <div class="reward-card">
+        <div class="reward-img">foto da vantagem</div>
+        <div class="reward-body">
+          <div class="reward-title">10% na mensalidade</div>
+          <div class="reward-partner">Parceiro EduPay</div>
+          <div class="reward-foot">
+            <div class="price"><svg class="coin" width="16" height="16"><use href="#coin-icon"/></svg> 500</div>
+            <button class="cta locked">Saldo insuficiente</button>
+          </div>
+        </div>
+      </div>
+      <div class="reward-card">
+        <div class="reward-img">foto da vantagem</div>
+        <div class="reward-body">
+          <div class="reward-title">Kit de material gráfico</div>
+          <div class="reward-partner">Papelaria Central</div>
+          <div class="reward-foot">
+            <div class="price"><svg class="coin" width="16" height="16"><use href="#coin-icon"/></svg> 120</div>
+            <button class="cta">Resgatar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXTRATO COMPLETO (ALUNO) -->
+  <section class="screen" id="extrato">
+    <div class="section-title" style="margin-top:0;">
+      <h2>Extrato completo</h2>
+      <span class="muted">Camila Duarte · saldo atual 1.240</span>
+    </div>
+    <div class="card" style="margin-bottom:18px;">
+      <form style="display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end;">
+        <div class="field" style="flex:1; min-width:160px;">
+          <label>Tipo</label>
+          <select>
+            <option>Todas as transações</option>
+            <option>Recebimentos</option>
+            <option>Resgates</option>
+          </select>
+        </div>
+        <div class="field" style="flex:1; min-width:160px;">
+          <label>Período</label>
+          <select>
+            <option>Este semestre</option>
+            <option>Últimos 30 dias</option>
+            <option>Tudo</option>
+          </select>
+        </div>
+        <button class="cta ghost" type="button" style="height:39px;">Filtrar</button>
+      </form>
+    </div>
+    <div class="card">
+      <div class="timeline">
+        <div class="row">
+          <div class="ticon in">+</div>
+          <div class="trow-main">
+            <div class="trow-title">Prof. Ricardo Alves</div>
+            <div class="trow-sub">"Ótima participação na apresentação da Sprint 02" · 08/11</div>
+          </div>
+          <div class="trow-amt in">+150</div>
+        </div>
+        <div class="row">
+          <div class="ticon out">−</div>
+          <div class="trow-main">
+            <div class="trow-title">Resgate: Desconto 15% no RU</div>
+            <div class="trow-sub">Cupom 8F3K2A91 · 03/11</div>
+          </div>
+          <div class="trow-amt out">−80</div>
+        </div>
+        <div class="row">
+          <div class="ticon in">+</div>
+          <div class="trow-main">
+            <div class="trow-title">Profa. Milena Menezes</div>
+            <div class="trow-sub">"Entrega adiantada do diagrama de classes" · 29/10</div>
+          </div>
+          <div class="trow-amt in">+100</div>
+        </div>
+        <div class="row">
+          <div class="ticon in">+</div>
+          <div class="trow-main">
+            <div class="trow-title">Prof. Ricardo Alves</div>
+            <div class="trow-sub">"Apresentação do protótipo" · 14/10</div>
+          </div>
+          <div class="trow-amt in">+200</div>
+        </div>
+        <div class="row">
+          <div class="ticon out">−</div>
+          <div class="trow-main">
+            <div class="trow-title">Resgate: Kit de material gráfico</div>
+            <div class="trow-sub">Cupom A12BC9F0 · 02/10</div>
+          </div>
+          <div class="trow-amt out">−120</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEU PERFIL (ALUNO) -->
+  <section class="screen" id="perfil">
+    <div class="hud">
+      <div>
+        <div class="who">Meu perfil</div>
+        <div class="name">Camila Duarte <span class="level-badge">Nível 4 · Colaboradora</span></div>
+      </div>
+      <div class="balance">
+        <div class="balance-row">
+          <svg class="coin" width="30" height="30"><use href="#coin-icon"/></svg>
+          <div class="num">1.240</div>
+        </div>
+        <div class="label">moedas disponíveis</div>
+      </div>
+    </div>
+    <div class="card" style="max-width:640px;">
+      <h3>Editar meus dados</h3>
+      <p class="muted">CPF não pode ser alterado</p>
+      <form>
+        <div class="grid cols-2" style="gap:14px;">
+          <div class="field"><label>Nome completo</label><input value="Camila Duarte"></div>
+          <div class="field"><label>CPF</label><input value="123.456.789-00" disabled style="opacity:.6;"></div>
+          <div class="field"><label>E-mail</label><input type="email" value="camila.duarte@puc.br"></div>
+          <div class="field"><label>Curso</label><input value="Engenharia de Software"></div>
+        </div>
+        <div class="field"><label>Endereço</label><input value="Rua das Acácias, 120 - Belo Horizonte/MG"></div>
+      </form>
+      <button class="cta">Salvar alterações</button>
+    </div>
+  </section>
+
+  <!-- PROFESSOR -->
+  <section class="screen" id="professor">
+    <div class="hud">
+      <div>
+        <div class="who">Departamento de Engenharia de Software</div>
+        <div class="name">Prof. Ricardo Alves <span class="level-badge">Mentor nível ouro</span></div>
+        <div class="xpbar" style="width:260px;"><i style="width:41%"></i></div>
+        <div style="font-size:11px; opacity:.7; margin-top:6px;">410 moedas usadas de 1.000 neste semestre</div>
+      </div>
+      <div class="balance">
+        <div class="balance-row">
+          <svg class="coin" width="30" height="30"><use href="#coin-icon"/></svg>
+          <div class="num">590</div>
+        </div>
+        <div class="label">saldo para distribuir</div>
+      </div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Reconhecer um aluno</h3>
+        <p class="muted">O motivo é obrigatório e fica visível para o aluno</p>
+        <form>
+          <div class="field"><label>Aluno</label><input placeholder="Buscar por nome ou CPF"></div>
+          <div class="field"><label>Quantidade de moedas</label><input type="number" placeholder="Ex.: 100"></div>
+          <div class="field"><label>Motivo do reconhecimento</label><textarea placeholder="Ex.: Excelente participação na aula de hoje"></textarea></div>
+        </form>
+        <button class="cta">Enviar moedas</button>
+      </div>
+
+      <div class="card">
+        <h3>Extrato de envios</h3>
+        <p class="muted">Histórico deste semestre</p>
+        <div class="timeline">
+          <div class="row">
+            <div class="ticon out">−</div>
+            <div class="trow-main">
+              <div class="trow-title">Camila Duarte</div>
+              <div class="trow-sub">"Ótima participação na apresentação da Sprint 02"</div>
+            </div>
+            <div class="trow-amt out">−150</div>
+          </div>
+          <div class="row">
+            <div class="ticon out">−</div>
+            <div class="trow-main">
+              <div class="trow-title">João Pedro Lima</div>
+              <div class="trow-sub">"Ajudou colegas no laboratório"</div>
+            </div>
+            <div class="trow-amt out">−60</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EMPRESA -->
+  <section class="screen" id="empresa">
+    <div class="hud" style="background: linear-gradient(135deg, var(--teal-ink), var(--teal));">
+      <div>
+        <div class="who">Parceiro desde 2026</div>
+        <div class="name">Restaurante Universitário</div>
+      </div>
+      <div class="balance">
+        <div class="num">27</div>
+        <div class="label">resgates este mês</div>
+      </div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Cadastrar vantagem</h3>
+        <p class="muted">Apareça na loja de vantagens dos alunos</p>
+        <form>
+          <div class="field"><label>Descrição</label><input placeholder="Ex.: Desconto 15% no almoço"></div>
+          <div class="field"><label>Custo em moedas</label><input type="number" placeholder="Ex.: 80"></div>
+          <div class="field"><label>Foto do produto</label><input type="file"></div>
+        </form>
+        <button class="cta">Publicar vantagem</button>
+      </div>
+
+      <div class="card">
+        <h3>Cupons para conferir</h3>
+        <p class="muted">Confirme o código apresentado pelo aluno</p>
+        <div class="timeline">
+          <div class="row">
+            <div class="ticon in"><svg class="coin" width="20" height="20"><use href="#coin-icon"/></svg></div>
+            <div class="trow-main">
+              <div class="trow-title">Camila Duarte</div>
+              <div class="trow-sub">Desconto 15% no RU</div>
+            </div>
+            <code style="font-weight:800;">8F3K2A91</code>
+          </div>
+          <div class="row">
+            <div class="ticon in"><svg class="coin" width="20" height="20"><use href="#coin-icon"/></svg></div>
+            <div class="trow-main">
+              <div class="trow-title">João Pedro Lima</div>
+              <div class="trow-sub">Desconto 15% no RU</div>
+            </div>
+            <code style="font-weight:800;">A12BC9F0</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CADASTRO EMPRESA PARCEIRA -->
+  <section class="screen" id="cadastro-empresa">
+    <div class="login-wrap">
+      <div class="login-card" style="text-align:left;">
+        <div style="text-align:center;">
+          <svg class="coin bounce" width="56" height="56" style="margin-bottom:10px;"><use href="#coin-icon"/></svg>
+          <h2 style="margin:0 0 4px;">Cadastrar empresa parceira</h2>
+          <p class="muted" style="margin:0 0 22px;">Ofereça vantagens para os alunos da rede</p>
+        </div>
+        <form>
+          <div class="field"><label>Nome da empresa</label><input placeholder="Restaurante Universitário"></div>
+          <div class="field"><label>CNPJ</label><input placeholder="00.000.000/0001-00"></div>
+          <div class="field"><label>E-mail</label><input type="email" placeholder="contato@parceiro.com.br"></div>
+          <div class="field"><label>Senha</label><input type="password" placeholder="••••••••"></div>
+        </form>
+        <button class="cta" style="width:100%; padding:12px;">Criar conta de parceiro</button>
+        <p class="hint">Já é parceiro? <b>Fazer login</b></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GERENCIAR VANTAGENS (EMPRESA) -->
+  <section class="screen" id="vantagens-gerenciar">
+    <div class="section-title" style="margin-top:0;">
+      <h2>Minhas vantagens publicadas</h2>
+      <span class="muted">3 vantagens ativas</span>
+    </div>
+    <div class="store-grid">
+      <div class="reward-card">
+        <div class="reward-img">foto da vantagem</div>
+        <div class="reward-body">
+          <div class="reward-title">Desconto 15% no RU</div>
+          <div class="reward-partner">42 resgates até agora</div>
+          <div class="reward-foot">
+            <div class="price"><svg class="coin" width="16" height="16"><use href="#coin-icon"/></svg> 80</div>
+            <div style="display:flex; gap:6px;">
+              <button class="cta ghost">Editar</button>
+              <button class="cta" style="background:var(--danger);">Excluir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reward-card">
+        <div class="reward-img">foto da vantagem</div>
+        <div class="reward-body">
+          <div class="reward-title">10% na mensalidade</div>
+          <div class="reward-partner">9 resgates até agora</div>
+          <div class="reward-foot">
+            <div class="price"><svg class="coin" width="16" height="16"><use href="#coin-icon"/></svg> 500</div>
+            <div style="display:flex; gap:6px;">
+              <button class="cta ghost">Editar</button>
+              <button class="cta" style="background:var(--danger);">Excluir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reward-card">
+        <div class="reward-img">foto da vantagem</div>
+        <div class="reward-body">
+          <div class="reward-title">Kit de material gráfico</div>
+          <div class="reward-partner">15 resgates até agora</div>
+          <div class="reward-foot">
+            <div class="price"><svg class="coin" width="16" height="16"><use href="#coin-icon"/></svg> 120</div>
+            <div style="display:flex; gap:6px;">
+              <button class="cta ghost">Editar</button>
+              <button class="cta" style="background:var(--danger);">Excluir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONFIRMAÇÃO DE RESGATE (ALUNO) -->
+  <section class="screen" id="confirmacao">
+    <div style="min-height:460px; background:rgba(31,16,51,.55); border-radius:var(--radius); display:flex; align-items:center; justify-content:center; padding:24px;">
+      <div class="card" style="max-width:380px; text-align:center; box-shadow:0 24px 48px rgba(0,0,0,.25);">
+        <div style="font-size:40px; margin-bottom:6px;">🎉</div>
+        <h3 style="font-size:18px;">Vantagem resgatada!</h3>
+        <p class="muted">Desconto 15% no RU · Restaurante Universitário</p>
+        <div class="coupon" style="margin:18px 0; justify-content:center; flex-direction:column; gap:6px;">
+          <div style="font-size:12px; color:var(--ink-soft);">Apresente este código no balcão</div>
+          <code style="font-size:22px;">8F3K2A91</code>
+        </div>
+        <p class="muted" style="font-size:12px;">Um e-mail de confirmação também foi enviado para você e para a empresa parceira.</p>
+        <button class="cta" style="width:100%; padding:12px; margin-top:8px;">Voltar para a loja</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  const tabs = document.querySelectorAll('nav.tabs button');
+  const screens = document.querySelectorAll('.screen');
+  tabs.forEach(btn => btn.addEventListener('click', () => {
+    tabs.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    screens.forEach(s => s.classList.remove('active'));
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  }));
+  document.querySelectorAll('.roles button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.roles button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+  }));
+</script>
+
+</body>
+</html>
