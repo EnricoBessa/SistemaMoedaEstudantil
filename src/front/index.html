@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Besiktas</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<svg class="defs">
+  <defs>
+    <symbol id="coin-icon" viewBox="0 0 64 64">
+      <ellipse cx="32" cy="38" rx="27" ry="23" fill="#c9790a"/>
+      <circle cx="32" cy="30" r="27" fill="#f7b733" stroke="#6b3e04" stroke-width="3"/>
+      <circle cx="32" cy="30" r="19" fill="none" stroke="#6b3e04" stroke-width="2.5" stroke-dasharray="3 4" opacity=".7"/>
+      <text x="32" y="40" text-anchor="middle" font-size="28" font-weight="800" fill="#6b3e04" font-family="Segoe UI, Arial, sans-serif">$</text>
+      <path d="M17 18 Q22 10 32 10" stroke="#ffe9b0" stroke-width="4" stroke-linecap="round" fill="none"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="topbar">
+  <div class="brand">
+    <svg class="coin bounce" width="28" height="28"><use href="#coin-icon"/></svg>
+    Besiktas
+  </div>
+  <div style="display:flex; align-items:center;">
+    <div class="notif-wrap" id="notif-wrap" style="display:none;">
+      <button class="notif-bell" id="notif-bell" aria-label="Notificações">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span class="notif-badge" id="notif-badge" style="display:none;">0</span>
+      </button>
+      <div class="notif-panel" id="notif-panel">
+        <div class="notif-panel-header">
+          <span>Notificações</span>
+          <a>Marcar todas como lidas</a>
+        </div>
+        <div class="notif-list" id="notif-list"></div>
+      </div>
+    </div>
+    <button class="logout-btn" id="logout-btn" style="display:none;">Sair</button>
+  </div>
+</div>
+
+<nav class="tabs" id="nav-tabs"></nav>
+
+<main id="app-main"></main>
+
+<script src="js/app.js"></script>
+
+</body>
+</html>

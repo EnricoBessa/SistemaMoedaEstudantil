@@ -1,0 +1,21 @@
+<!-- CADASTRO EMPRESA PARCEIRA -->
+<section class="screen" id="cadastro-empresa">
+  <div class="login-wrap">
+    <div class="login-card" style="text-align:left;">
+      <div style="text-align:center;">
+        <svg class="coin bounce" width="56" height="56" style="margin-bottom:10px;"><use href="#coin-icon"/></svg>
+        <h2 style="margin:0 0 4px;">Cadastrar empresa parceira</h2>
+        <p class="muted" style="margin:0 0 22px;">Ofereça vantagens para os alunos da rede</p>
+      </div>
+      <form id="cadastro-empresa-form">
+        <p class="error-msg" id="cadastro-empresa-error" style="display:none;"></p>
+        <div class="field"><label>Nome da empresa</label><input id="ce-nome" placeholder="Restaurante Universitário" required></div>
+        <div class="field"><label>CNPJ</label><input id="ce-cnpj" placeholder="Somente números" required></div>
+        <div class="field"><label>E-mail</label><input type="email" id="ce-email" placeholder="contato@parceiro.com.br" required></div>
+        <div class="field"><label>Senha</label><input type="password" id="ce-senha" placeholder="••••••••" required></div>
+      </form>
+      <button class="cta" id="cadastro-empresa-submit" style="width:100%; padding:12px;">Criar conta de parceiro</button>
+      <p class="hint">Já é parceiro? <b><a href="#" onclick="showScreen('login'); return false;">Fazer login</a></b></p>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,39 @@
+<!-- PROFESSOR -->
+<section class="screen" id="professor">
+  <div class="hud">
+    <div>
+      <div class="who" id="professor-depto">Carregando...</div>
+      <div class="name" id="professor-nome"></div>
+      <div class="xpbar" style="width:260px;"><i id="professor-xp" style="width:0%"></i></div>
+      <div style="font-size:11px; opacity:.7; margin-top:6px;" id="professor-xp-label"></div>
+    </div>
+    <div class="balance">
+      <div class="balance-row">
+        <svg class="coin" width="30" height="30"><use href="#coin-icon"/></svg>
+        <div class="num" id="professor-saldo">0</div>
+      </div>
+      <div class="label">saldo para distribuir</div>
+    </div>
+  </div>
+
+  <div class="grid cols-2">
+    <div class="card">
+      <h3>Reconhecer um aluno</h3>
+      <p class="muted">O motivo é obrigatório e fica visível para o aluno</p>
+      <form id="enviar-form">
+        <p class="error-msg" id="enviar-error" style="display:none;"></p>
+        <p class="success-msg" id="enviar-sucesso" style="display:none;"></p>
+        <div class="field"><label>CPF do aluno</label><input id="enviar-cpf" placeholder="Somente números"></div>
+        <div class="field"><label>Quantidade de moedas</label><input type="number" min="1" id="enviar-quantidade" placeholder="Ex.: 100"></div>
+        <div class="field"><label>Motivo do reconhecimento</label><textarea id="enviar-motivo" placeholder="Ex.: Excelente participação na aula de hoje"></textarea></div>
+      </form>
+      <button class="cta" id="enviar-submit">Enviar moedas</button>
+    </div>
+
+    <div class="card">
+      <h3>Extrato de envios</h3>
+      <p class="muted">Histórico deste semestre</p>
+      <div class="timeline" id="professor-extrato"></div>
+    </div>
+  </div>
+</section>
