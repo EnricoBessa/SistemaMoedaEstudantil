@@ -43,6 +43,19 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>src/back</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/back</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/front</directory>
+                <targetPath>static</targetPath>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

@@ -1,0 +1,33 @@
+<!-- EMPRESA -->
+<section class="screen" id="empresa">
+  <div class="hud" style="background: linear-gradient(135deg, var(--teal-ink), var(--teal));">
+    <div>
+      <div class="who">Parceiro</div>
+      <div class="name" id="empresa-nome">Carregando...</div>
+    </div>
+    <div class="balance">
+      <div class="num" id="empresa-resgates">0</div>
+      <div class="label">resgates registrados</div>
+    </div>
+  </div>
+
+  <div class="grid cols-2">
+    <div class="card">
+      <h3>Cadastrar vantagem</h3>
+      <p class="muted">Apareça na loja de vantagens dos alunos</p>
+      <form id="vantagem-form">
+        <p class="error-msg" id="vantagem-error" style="display:none;"></p>
+        <p class="success-msg" id="vantagem-sucesso" style="display:none;"></p>
+        <div class="field"><label>Descrição</label><input id="vantagem-descricao" placeholder="Ex.: Desconto 15% no almoço"></div>
+        <div class="field"><label>Custo em moedas</label><input type="number" min="1" id="vantagem-custo" placeholder="Ex.: 80"></div>
+      </form>
+      <button class="cta" id="vantagem-submit">Publicar vantagem</button>
+    </div>
+
+    <div class="card">
+      <h3>Cupons para conferir</h3>
+      <p class="muted">Resgates recentes dos alunos</p>
+      <div class="timeline" id="empresa-cupons"></div>
+    </div>
+  </div>
+</section>

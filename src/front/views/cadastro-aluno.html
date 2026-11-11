@@ -1,0 +1,30 @@
+<!-- CRIAR CADASTRO (ALUNO) -->
+<section class="screen" id="cadastro-aluno">
+  <div class="login-wrap" style="max-width:560px;">
+    <div class="login-card" style="text-align:left;">
+      <div style="text-align:center;">
+        <svg class="coin bounce" width="56" height="56" style="margin-bottom:10px;"><use href="#coin-icon"/></svg>
+        <h2 style="margin:0 0 4px;">Criar cadastro de aluno</h2>
+        <p class="muted" style="margin:0 0 22px;">Leva menos de 2 minutos</p>
+      </div>
+      <form id="cadastro-aluno-form">
+        <p class="error-msg" id="cadastro-aluno-error" style="display:none;"></p>
+        <div class="grid cols-2" style="gap:14px;">
+          <div class="field"><label>Nome completo</label><input id="ca-nome" placeholder="Camila Duarte" required></div>
+          <div class="field"><label>E-mail</label><input type="email" id="ca-email" placeholder="voce@instituicao.edu.br" required></div>
+          <div class="field"><label>CPF</label><input id="ca-cpf" placeholder="00000000000" required></div>
+          <div class="field"><label>RG</label><input id="ca-rg" placeholder="MG1234567"></div>
+          <div class="field"><label>Senha</label><input type="password" id="ca-senha" placeholder="••••••••" required></div>
+          <div class="field"><label>Curso</label><input id="ca-curso" placeholder="Eng. de Software"></div>
+        </div>
+        <div class="field"><label>Endereço</label><input id="ca-endereco" placeholder="Rua, número, bairro, cidade"></div>
+        <div class="field">
+          <label>Instituição de ensino</label>
+          <select id="ca-instituicao"></select>
+        </div>
+      </form>
+      <button class="cta" id="cadastro-aluno-submit" style="width:100%; padding:12px;">Criar conta</button>
+      <p class="hint" style="text-align:center;">Já tem conta? <b><a href="#" onclick="showScreen('login'); return false;">Fazer login</a></b></p>
+    </div>
+  </div>
+</section>

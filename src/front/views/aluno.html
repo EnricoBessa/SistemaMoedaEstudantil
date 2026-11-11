@@ -1,0 +1,39 @@
+<!-- ALUNO -->
+<section class="screen" id="aluno">
+  <div class="hud">
+    <div class="toast" id="aluno-toast" style="display:none;"><span class="trophy">🏆</span> <span id="aluno-toast-text"></span></div>
+    <div>
+      <div class="who">Bem-vindo(a) de volta</div>
+      <div class="name" id="aluno-nome">Carregando...<span class="level-badge" id="aluno-nivel"></span></div>
+      <div class="xpbar" style="width:240px;"><i id="aluno-xp" style="width:0%"></i></div>
+      <div class="streak" id="aluno-streak"></div>
+    </div>
+    <div class="balance">
+      <div class="balance-row">
+        <svg class="coin" width="30" height="30"><use href="#coin-icon"/></svg>
+        <div class="num" id="aluno-saldo">0</div>
+      </div>
+      <div class="label">moedas disponíveis</div>
+    </div>
+  </div>
+
+  <div class="grid cols-2">
+    <div class="card">
+      <h3>Últimas moedas recebidas</h3>
+      <p class="muted">Reconhecimentos dos seus professores</p>
+      <div class="timeline" id="aluno-recebidas"></div>
+    </div>
+
+    <div class="card">
+      <h3>Meu cupom mais recente</h3>
+      <p class="muted">Apresente no estabelecimento parceiro</p>
+      <div id="aluno-cupom"></div>
+    </div>
+  </div>
+
+  <div class="section-title">
+    <h2>Loja de vantagens</h2>
+    <span class="muted">ordenar por: menor custo</span>
+  </div>
+  <div class="store-grid" id="aluno-loja"></div>
+</section>
