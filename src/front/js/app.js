@@ -5,6 +5,9 @@ let loginRole = 'ALUNO';
 function api(path, options) {
   options = options || {};
   options.headers = Object.assign({'Content-Type': 'application/json'}, options.headers || {});
+  if (session && session.token) {
+    options.headers.Authorization = 'Bearer ' + session.token;
+  }
   return fetch(API + path, options).then(async res => {
     const isJson = (res.headers.get('content-type') || '').includes('application/json');
     const body = isJson ? await res.json().catch(() => null) : await res.text();
@@ -58,9 +61,6 @@ function renderNav() {
 }
 
 // ---------- NOTIFICAÇÕES ----------
-// TODO (pendente do épico): o contador e a lista hoje são buscados por fetch simples (sem push/websocket
-// e sem o evento assíncrono do backend). Quando o fluxo assíncrono (MoedaRecebidaEvent + @EventListener @Async)
-// estiver pronto no backend, pode remover este comentário — a API consumida aqui (GET/PATCH) não muda.
 function notifIcone(mensagem) {
   if (mensagem.indexOf('Resgate confirmado') === 0) {
     return '<div class="notif-icon" style="background:#fdf0cf;">🎟️</div>';
@@ -480,7 +480,7 @@ function attachEventListeners() {
     }
     api('/auth/login', { method: 'POST', body: JSON.stringify({ email, senha, tipo: loginRole }) })
       .then(data => {
-        session = { tipo: data.tipo, usuario: data.usuario };
+        session = { tipo: data.tipo, usuario: data.usuario, token: data.token };
         saveSession();
         routeAfterLogin();
       })
@@ -509,8 +509,9 @@ function attachEventListeners() {
       return;
     }
     api('/alunos', { method: 'POST', body: JSON.stringify(payload) })
-      .then(aluno => {
-        session = { tipo: 'ALUNO', usuario: aluno };
+      .then(() => api('/auth/login', { method: 'POST', body: JSON.stringify({ email: payload.email, senha: payload.senha, tipo: 'ALUNO' }) }))
+      .then(data => {
+        session = { tipo: data.tipo, usuario: data.usuario, token: data.token };
         saveSession();
         routeAfterLogin();
       })
@@ -535,8 +536,9 @@ function attachEventListeners() {
       return;
     }
     api('/empresas', { method: 'POST', body: JSON.stringify(payload) })
-      .then(empresa => {
-        session = { tipo: 'EMPRESA', usuario: empresa };
+      .then(() => api('/auth/login', { method: 'POST', body: JSON.stringify({ email: payload.email, senha: payload.senha, tipo: 'EMPRESA' }) }))
+      .then(data => {
+        session = { tipo: data.tipo, usuario: data.usuario, token: data.token };
         saveSession();
         routeAfterLogin();
       })

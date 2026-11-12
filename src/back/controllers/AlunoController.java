@@ -4,6 +4,7 @@ import com.moedaestudantil.model.Aluno;
 import com.moedaestudantil.repository.AlunoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +17,9 @@ public class AlunoController {
     @Autowired
     private AlunoRepository alunoRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     // CREATE / CADASTRAR
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody Aluno aluno) {
@@ -23,6 +27,7 @@ public class AlunoController {
             return ResponseEntity.badRequest().body("Já existe um aluno cadastrado com este CPF.");
         }
         aluno.setSaldoMoedas(0); // Inicializa com saldo zerado
+        aluno.setSenha(passwordEncoder.encode(aluno.getSenha()));
         return ResponseEntity.ok(alunoRepository.save(aluno));
     }
 

@@ -4,6 +4,7 @@ import com.moedaestudantil.model.Professor;
 import com.moedaestudantil.repository.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +17,10 @@ public class ProfessorController {
     @Autowired
     private ProfessorRepository professorRepository;
 
-    // Professores já são pré-cadastrados pela instituição parceira.
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    // Professores já são pré-cadastrados pela instituição parceira (endpoint exige autenticação).
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody Professor professor) {
         if (professorRepository.existsById(professor.getCpf())) {
@@ -25,6 +29,7 @@ public class ProfessorController {
         if (professor.getSaldoMoedas() <= 0) {
             professor.setSaldoMoedas(1000);
         }
+        professor.setSenha(passwordEncoder.encode(professor.getSenha()));
         return ResponseEntity.ok(professorRepository.save(professor));
     }
 

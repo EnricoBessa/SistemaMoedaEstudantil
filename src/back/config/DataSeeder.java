@@ -3,11 +3,13 @@ package com.moedaestudantil.config;
 import com.moedaestudantil.model.*;
 import com.moedaestudantil.repository.*;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
- * Popula o banco H2 em memória com dados de demonstração ao subir a aplicação,
- * para que o front-end tenha algo para mostrar sem exigir cadastro manual antes.
+ * Popula o banco com dados de demonstração ao subir a aplicação, para que o
+ * front-end tenha algo para mostrar sem exigir cadastro manual antes.
+ * Login de todos os usuários de demonstração: senha "123456".
  */
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -18,19 +20,22 @@ public class DataSeeder implements CommandLineRunner {
     private final EmpresaParceiraRepository empresaRepository;
     private final VantagemRepository vantagemRepository;
     private final TransacaoRepository transacaoRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public DataSeeder(InstituicaoRepository instituicaoRepository,
                        AlunoRepository alunoRepository,
                        ProfessorRepository professorRepository,
                        EmpresaParceiraRepository empresaRepository,
                        VantagemRepository vantagemRepository,
-                       TransacaoRepository transacaoRepository) {
+                       TransacaoRepository transacaoRepository,
+                       PasswordEncoder passwordEncoder) {
         this.instituicaoRepository = instituicaoRepository;
         this.alunoRepository = alunoRepository;
         this.professorRepository = professorRepository;
         this.empresaRepository = empresaRepository;
         this.vantagemRepository = vantagemRepository;
         this.transacaoRepository = transacaoRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -55,7 +60,7 @@ public class DataSeeder implements CommandLineRunner {
         professor.setCpf("11111111111");
         professor.setNome("Ricardo Alves");
         professor.setEmail("ricardo.alves@puc.br");
-        professor.setSenha("123456");
+        professor.setSenha(passwordEncoder.encode("123456"));
         professor.setDepartamento("Engenharia de Software");
         professor.setSaldoMoedas(590);
         professor.setInstituicao(puc);
@@ -65,7 +70,7 @@ public class DataSeeder implements CommandLineRunner {
         aluna.setCpf("22222222222");
         aluna.setNome("Camila Duarte");
         aluna.setEmail("camila.duarte@puc.br");
-        aluna.setSenha("123456");
+        aluna.setSenha(passwordEncoder.encode("123456"));
         aluna.setRg("MG1234567");
         aluna.setEndereco("Rua das Acácias, 120 - Belo Horizonte/MG");
         aluna.setCurso("Engenharia de Software");
@@ -77,7 +82,7 @@ public class DataSeeder implements CommandLineRunner {
         restaurante.setCnpj("11222333000144");
         restaurante.setNome("Restaurante Universitário");
         restaurante.setEmail("contato@ru.com.br");
-        restaurante.setSenha("123456");
+        restaurante.setSenha(passwordEncoder.encode("123456"));
         empresaRepository.save(restaurante);
 
         Vantagem desconto = new Vantagem();

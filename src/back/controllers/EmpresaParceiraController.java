@@ -4,6 +4,7 @@ import com.moedaestudantil.model.EmpresaParceira;
 import com.moedaestudantil.repository.EmpresaParceiraRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,11 +17,15 @@ public class EmpresaParceiraController {
     @Autowired
     private EmpresaParceiraRepository empresaRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody EmpresaParceira empresa) {
         if (empresaRepository.existsById(empresa.getCnpj())) {
             return ResponseEntity.badRequest().body("Já existe uma empresa cadastrada com este CNPJ.");
         }
+        empresa.setSenha(passwordEncoder.encode(empresa.getSenha()));
         return ResponseEntity.ok(empresaRepository.save(empresa));
     }
 

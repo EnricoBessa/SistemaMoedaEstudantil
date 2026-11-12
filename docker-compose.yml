@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: moedaestudantil-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: moedaestudantil
+      POSTGRES_USER: moedaestudantil
+      POSTGRES_PASSWORD: moedaestudantil
+    ports:
+      - "5432:5432"
+    volumes:
+      - moedaestudantil-db-data:/var/lib/postgresql/data
+
+volumes:
+  moedaestudantil-db-data:
