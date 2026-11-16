@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Front-end estático (SPA) e health-check
-                        .requestMatchers("/", "/index.html", "/favicon.ico", "/css/**", "/js/**", "/views/**", "/img/**").permitAll()
+                        .requestMatchers("/", "/index.html", "/favicon.ico", "/favicon.svg", "/css/**", "/js/**", "/views/**", "/img/**").permitAll()
                         // Login e os dois cadastros públicos (aluno se auto-cadastra, empresa se auto-cadastra)
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/alunos", "/api/empresas").permitAll()

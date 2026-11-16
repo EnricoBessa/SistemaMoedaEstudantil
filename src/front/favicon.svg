@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <ellipse cx="32" cy="38" rx="27" ry="23" fill="#c9790a"/>
+  <circle cx="32" cy="30" r="27" fill="#f7b733" stroke="#6b3e04" stroke-width="3"/>
+  <circle cx="32" cy="30" r="19" fill="none" stroke="#6b3e04" stroke-width="2.5" stroke-dasharray="3 4" opacity=".7"/>
+  <text x="32" y="40" text-anchor="middle" font-size="28" font-weight="800" fill="#6b3e04" font-family="Segoe UI, Arial, sans-serif">$</text>
+  <path d="M17 18 Q22 10 32 10" stroke="#ffe9b0" stroke-width="4" stroke-linecap="round" fill="none"/>
+</svg>

@@ -22,12 +22,19 @@ function api(path, options) {
 function fmtMoeda(n) { return Number(n || 0).toLocaleString('pt-BR'); }
 function fmtData(d) { return d ? new Date(d).toLocaleDateString('pt-BR') : ''; }
 
+function setBtnLoading(btn, loading, loadingLabel) {
+  if (loading) {
+    btn.dataset.originalText = btn.dataset.originalText || btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="btn-spinner"></span>' + (loadingLabel || 'Carregando...');
+  } else {
+    btn.disabled = false;
+    btn.textContent = btn.dataset.originalText || btn.textContent;
+  }
+}
+
 const NAV_BY_STATE = {
-  guest: [
-    {id:'login', label:'Login'},
-    {id:'cadastro-aluno', label:'Criar cadastro'},
-    {id:'cadastro-empresa', label:'Cadastro empresa'},
-  ],
+  guest: [],
   ALUNO: [
     {id:'aluno', label:'Início'},
     {id:'extrato', label:'Extrato completo'},
@@ -46,12 +53,13 @@ function renderNav() {
   const tabsEl = document.getElementById('nav-tabs');
   const items = session ? NAV_BY_STATE[session.tipo] : NAV_BY_STATE.guest;
   tabsEl.innerHTML = '';
+  tabsEl.style.display = items.length ? 'flex' : 'none';
   items.forEach(item => {
-    const btn = document.createElement('button');
-    btn.textContent = item.label;
-    btn.dataset.tab = item.id;
-    btn.addEventListener('click', () => showScreen(item.id));
-    tabsEl.appendChild(btn);
+    const link = document.createElement('a');
+    link.textContent = item.label;
+    link.href = '#' + item.id;
+    link.dataset.tab = item.id;
+    tabsEl.appendChild(link);
   });
   document.getElementById('logout-btn').style.display = session ? 'inline-block' : 'none';
 
@@ -121,7 +129,7 @@ function marcarTodasComoLidas() {
 }
 
 function setActiveTab(id) {
-  document.querySelectorAll('#nav-tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+  document.querySelectorAll('#nav-tabs a').forEach(a => a.classList.toggle('active', a.dataset.tab === id));
 }
 
 const SCREEN_LOADERS = {
@@ -144,13 +152,23 @@ function showScreen(id) {
   if (requiredRole && (!session || session.tipo !== requiredRole)) {
     id = 'login';
   }
+  if (!document.getElementById(id)) return;
+  if (location.hash.slice(1) !== id) {
+    // Atualiza a URL; o listener de hashchange chama showScreen(id) de novo,
+    // já sincronizado, para aplicar a troca de tela abaixo.
+    location.hash = id;
+    return;
+  }
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(id);
-  if (!target) return;
   target.classList.add('active');
   setActiveTab(id);
   if (SCREEN_LOADERS[id]) SCREEN_LOADERS[id]();
 }
+
+window.addEventListener('hashchange', () => {
+  showScreen(location.hash.slice(1) || 'login');
+});
 
 function routeAfterLogin() {
   renderNav();
@@ -160,10 +178,15 @@ function routeAfterLogin() {
 }
 
 function logout() {
-  session = null;
-  localStorage.removeItem('besiktas_session');
-  renderNav();
-  showScreen('login');
+  const btn = document.getElementById('logout-btn');
+  if (btn) setBtnLoading(btn, true, 'Saindo...');
+  setTimeout(() => {
+    session = null;
+    localStorage.removeItem('besiktas_session');
+    renderNav();
+    showScreen('login');
+    if (btn) setBtnLoading(btn, false);
+  }, 300);
 }
 
 function saveSession() {
@@ -268,7 +291,7 @@ function loadAlunoScreen() {
             <div class="reward-partner">${v.empresaParceira ? v.empresaParceira.nome : ''}</div>
             <div class="reward-foot">
               <div class="price"><svg class="coin" width="16" height="16"><use href="#coin-icon"/></svg> ${fmtMoeda(v.custoMoedas)}</div>
-              <button class="cta ${podeResgatar ? '' : 'locked'}" ${podeResgatar ? `onclick="resgatarVantagem(${v.id})"` : 'disabled'}>
+              <button class="cta ${podeResgatar ? '' : 'locked'}" ${podeResgatar ? `onclick="resgatarVantagem(${v.id}, this)"` : 'disabled'}>
                 ${podeResgatar ? 'Resgatar' : 'Saldo insuficiente'}
               </button>
             </div>
@@ -280,8 +303,9 @@ function loadAlunoScreen() {
   });
 }
 
-function resgatarVantagem(vantagemId) {
+function resgatarVantagem(vantagemId, btn) {
   const cpf = session.usuario.cpf;
+  if (btn) setBtnLoading(btn, true, 'Resgatando...');
   api('/transacoes/resgatar?alunoCpf=' + encodeURIComponent(cpf) + '&vantagemId=' + vantagemId, { method: 'POST' })
     .then(transacao => {
       document.getElementById('confirmacao-descricao').textContent =
@@ -289,14 +313,18 @@ function resgatarVantagem(vantagemId) {
       document.getElementById('confirmacao-codigo').textContent = transacao.codigoCupom;
       showScreen('confirmacao');
     })
-    .catch(err => alert(err.message));
+    .catch(err => {
+      alert(err.message);
+      if (btn) setBtnLoading(btn, false);
+    });
 }
 
 // ---------- EXTRATO COMPLETO ----------
 function loadExtratoScreen() {
   const cpf = session.usuario.cpf;
   Promise.all([api('/alunos/' + cpf), api('/transacoes/aluno/' + cpf)]).then(([aluno, transacoes]) => {
-    document.getElementById('extrato-resumo').textContent = aluno.nome + ' · saldo atual ' + fmtMoeda(aluno.saldoMoedas);
+    document.getElementById('extrato-resumo').innerHTML = aluno.nome +
+      ' <span class="badge gold">saldo atual <svg class="coin" width="13" height="13"><use href="#coin-icon"/></svg> ' + fmtMoeda(aluno.saldoMoedas) + '</span>';
     alunoTransacoesCache = transacoes;
     renderExtrato();
   });
@@ -469,6 +497,7 @@ function attachEventListeners() {
   });
 
   document.getElementById('login-submit').addEventListener('click', () => {
+    const btn = document.getElementById('login-submit');
     const email = document.getElementById('login-email').value.trim();
     const senha = document.getElementById('login-senha').value;
     const errorEl = document.getElementById('login-error');
@@ -478,6 +507,7 @@ function attachEventListeners() {
       errorEl.style.display = 'block';
       return;
     }
+    setBtnLoading(btn, true, 'Entrando...');
     api('/auth/login', { method: 'POST', body: JSON.stringify({ email, senha, tipo: loginRole }) })
       .then(data => {
         session = { tipo: data.tipo, usuario: data.usuario, token: data.token };
@@ -487,10 +517,12 @@ function attachEventListeners() {
       .catch(err => {
         errorEl.textContent = err.message;
         errorEl.style.display = 'block';
-      });
+      })
+      .finally(() => setBtnLoading(btn, false));
   });
 
   document.getElementById('cadastro-aluno-submit').addEventListener('click', () => {
+    const btn = document.getElementById('cadastro-aluno-submit');
     const errorEl = document.getElementById('cadastro-aluno-error');
     errorEl.style.display = 'none';
     const payload = {
@@ -508,6 +540,7 @@ function attachEventListeners() {
       errorEl.style.display = 'block';
       return;
     }
+    setBtnLoading(btn, true, 'Criando conta...');
     api('/alunos', { method: 'POST', body: JSON.stringify(payload) })
       .then(() => api('/auth/login', { method: 'POST', body: JSON.stringify({ email: payload.email, senha: payload.senha, tipo: 'ALUNO' }) }))
       .then(data => {
@@ -518,10 +551,12 @@ function attachEventListeners() {
       .catch(err => {
         errorEl.textContent = err.message;
         errorEl.style.display = 'block';
-      });
+      })
+      .finally(() => setBtnLoading(btn, false));
   });
 
   document.getElementById('cadastro-empresa-submit').addEventListener('click', () => {
+    const btn = document.getElementById('cadastro-empresa-submit');
     const errorEl = document.getElementById('cadastro-empresa-error');
     errorEl.style.display = 'none';
     const payload = {
@@ -535,6 +570,7 @@ function attachEventListeners() {
       errorEl.style.display = 'block';
       return;
     }
+    setBtnLoading(btn, true, 'Criando conta...');
     api('/empresas', { method: 'POST', body: JSON.stringify(payload) })
       .then(() => api('/auth/login', { method: 'POST', body: JSON.stringify({ email: payload.email, senha: payload.senha, tipo: 'EMPRESA' }) }))
       .then(data => {
@@ -545,10 +581,12 @@ function attachEventListeners() {
       .catch(err => {
         errorEl.textContent = err.message;
         errorEl.style.display = 'block';
-      });
+      })
+      .finally(() => setBtnLoading(btn, false));
   });
 
   document.getElementById('perfil-submit').addEventListener('click', () => {
+    const btn = document.getElementById('perfil-submit');
     const cpf = session.usuario.cpf;
     const errorEl = document.getElementById('perfil-error');
     const sucessoEl = document.getElementById('perfil-sucesso');
@@ -560,6 +598,7 @@ function attachEventListeners() {
       curso: document.getElementById('perfil-curso').value.trim(),
       endereco: document.getElementById('perfil-endereco').value.trim(),
     };
+    setBtnLoading(btn, true, 'Salvando...');
     api('/alunos/' + cpf, { method: 'PUT', body: JSON.stringify(payload) })
       .then(aluno => {
         session.usuario = aluno;
@@ -571,10 +610,12 @@ function attachEventListeners() {
       .catch(err => {
         errorEl.textContent = err.message;
         errorEl.style.display = 'block';
-      });
+      })
+      .finally(() => setBtnLoading(btn, false));
   });
 
   document.getElementById('enviar-submit').addEventListener('click', () => {
+    const btn = document.getElementById('enviar-submit');
     const professorCpf = session.usuario.cpf;
     const alunoCpf = document.getElementById('enviar-cpf').value.trim();
     const quantidade = Number(document.getElementById('enviar-quantidade').value);
@@ -590,6 +631,7 @@ function attachEventListeners() {
       return;
     }
 
+    setBtnLoading(btn, true, 'Enviando...');
     const params = new URLSearchParams({ professorCpf, alunoCpf, quantidade, motivo });
     api('/transacoes/enviar?' + params.toString(), { method: 'POST' })
       .then(() => {
@@ -603,10 +645,12 @@ function attachEventListeners() {
       .catch(err => {
         errorEl.textContent = err.message;
         errorEl.style.display = 'block';
-      });
+      })
+      .finally(() => setBtnLoading(btn, false));
   });
 
   document.getElementById('vantagem-submit').addEventListener('click', () => {
+    const btn = document.getElementById('vantagem-submit');
     const cnpj = session.usuario.cnpj;
     const errorEl = document.getElementById('vantagem-error');
     const sucessoEl = document.getElementById('vantagem-sucesso');
@@ -619,6 +663,7 @@ function attachEventListeners() {
       errorEl.style.display = 'block';
       return;
     }
+    setBtnLoading(btn, true, 'Publicando...');
     api('/vantagens', { method: 'POST', body: JSON.stringify({ descricao, custoMoedas, empresaParceira: { cnpj } }) })
       .then(() => {
         sucessoEl.textContent = 'Vantagem publicada com sucesso!';
@@ -629,7 +674,8 @@ function attachEventListeners() {
       .catch(err => {
         errorEl.textContent = err.message;
         errorEl.style.display = 'block';
-      });
+      })
+      .finally(() => setBtnLoading(btn, false));
   });
 }
 
@@ -650,8 +696,16 @@ loadViews().then(() => {
   attachEventListeners();
   renderNav();
   loadInstituicoesSelect();
+  const hashId = location.hash.slice(1);
   if (session && NAV_BY_STATE[session.tipo]) {
-    routeAfterLogin();
+    renderNav();
+    if (hashId && document.getElementById(hashId) && SCREEN_REQUIRES_ROLE[hashId] !== undefined) {
+      showScreen(hashId);
+    } else {
+      routeAfterLogin();
+    }
+  } else if (hashId === 'cadastro-aluno' || hashId === 'cadastro-empresa') {
+    showScreen(hashId);
   } else {
     showScreen('login');
   }

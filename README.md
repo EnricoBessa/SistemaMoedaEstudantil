@@ -126,3 +126,16 @@ curl -X POST "http://localhost:8080/api/transacoes/enviar?professorCpf=111111111
 * Upload de foto da vantagem não foi implementado (campo visual apenas).
 
 ---
+
+## Melhorias de infraestrutura (deploy)
+
+A aplicação está publicada e acessível em produção, com deploy automático a cada push:
+
+* **App no ar**: https://sistemamoedaestudantil-7khl.onrender.com
+* **Hospedagem**: [Render](https://render.com) (Docker + Postgres gerenciado)
+* **CI**: GitHub Actions roda build e testes (`mvn package`) a cada push/PR na `main`
+* **Deploy**: automático — o Render redeploya sozinho a cada push na `main`, sem passo manual
+
+Veja a documentação completa em [`deploy-docs/COMO-FUNCIONA.md`](./deploy-docs/COMO-FUNCIONA.md) (como o deploy funciona, como subir uma alteração nova) e [`deploy-docs/TROUBLESHOOTING.md`](./deploy-docs/TROUBLESHOOTING.md) (problemas comuns e como resolver).
+
+---
