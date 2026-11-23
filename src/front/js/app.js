@@ -147,10 +147,16 @@ const SCREEN_REQUIRES_ROLE = {
   empresa: 'EMPRESA', 'vantagens-gerenciar': 'EMPRESA',
 };
 
+const GUEST_ONLY_SCREENS = new Set(['login', 'cadastro-aluno', 'cadastro-empresa']);
+const HOME_SCREEN_BY_ROLE = { ALUNO: 'aluno', PROFESSOR: 'professor', EMPRESA: 'empresa' };
+
 function showScreen(id) {
   const requiredRole = SCREEN_REQUIRES_ROLE[id];
   if (requiredRole && (!session || session.tipo !== requiredRole)) {
     id = 'login';
+  }
+  if (session && GUEST_ONLY_SCREENS.has(id) && HOME_SCREEN_BY_ROLE[session.tipo]) {
+    id = HOME_SCREEN_BY_ROLE[session.tipo];
   }
   if (!document.getElementById(id)) return;
   if (location.hash.slice(1) !== id) {
@@ -168,6 +174,7 @@ function showScreen(id) {
 
 window.addEventListener('hashchange', () => {
   showScreen(location.hash.slice(1) || 'login');
+  loadNotificacoesBadge();
 });
 
 function routeAfterLogin() {
@@ -312,6 +319,7 @@ function resgatarVantagem(vantagemId, btn) {
         transacao.vantagem.descricao + (transacao.vantagem.empresaParceira ? (' · ' + transacao.vantagem.empresaParceira.nome) : '');
       document.getElementById('confirmacao-codigo').textContent = transacao.codigoCupom;
       showScreen('confirmacao');
+      loadNotificacoesBadge();
     })
     .catch(err => {
       alert(err.message);
