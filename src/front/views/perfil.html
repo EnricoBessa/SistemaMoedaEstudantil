@@ -1,9 +1,22 @@
 <!-- MEU PERFIL (ALUNO) -->
 <section class="screen" id="perfil">
-  <div class="hud">
-    <div>
-      <div class="who">Meu perfil</div>
-      <div class="name" id="perfil-nome-topo">Carregando...</div>
+  <div class="hud" style="align-items:center; gap:16px;">
+    <div style="display:flex; align-items:center; gap:16px;">
+      <label class="perfil-avatar-wrap" for="perfil-avatar-input" title="Trocar foto de perfil">
+        <img id="perfil-avatar-preview" class="avatar-preview" alt="Sua foto de perfil">
+        <span class="perfil-avatar-overlay">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z"/><circle cx="12" cy="13" r="4"/></svg>
+        </span>
+        <span class="perfil-avatar-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z"/><circle cx="12" cy="13" r="4"/></svg>
+        </span>
+      </label>
+      <input type="file" id="perfil-avatar-input" accept="image/png,image/jpeg,image/webp" style="display:none;">
+      <div>
+        <div class="who">Meu perfil</div>
+        <div class="name" id="perfil-nome-topo">Carregando...</div>
+        <p class="error-msg" id="perfil-avatar-error" style="display:none; margin:4px 0 0;"></p>
+      </div>
     </div>
     <div class="balance">
       <div class="balance-row">
@@ -11,19 +24,6 @@
         <div class="num" id="perfil-saldo">0</div>
       </div>
       <div class="label">moedas disponíveis</div>
-    </div>
-  </div>
-  <div class="card" style="max-width:640px;">
-    <h3>Foto de perfil</h3>
-    <p class="muted">Aparece no topo do sistema para a sua turma e professores</p>
-    <div style="display:flex; align-items:center; gap:16px;">
-      <img id="perfil-avatar-preview" class="avatar-preview" alt="Sua foto de perfil">
-      <div>
-        <p class="error-msg" id="perfil-avatar-error" style="display:none;"></p>
-        <label class="cta ghost" for="perfil-avatar-input" style="cursor:pointer; display:inline-block;">Escolher foto</label>
-        <input type="file" id="perfil-avatar-input" accept="image/png,image/jpeg,image/webp" style="display:none;">
-        <p class="hint" style="margin-top:6px;">PNG, JPG ou WEBP, até 5MB</p>
-      </div>
     </div>
   </div>
   <div class="card" style="max-width:640px;">

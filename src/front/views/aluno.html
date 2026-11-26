@@ -33,7 +33,14 @@
 
   <div class="section-title">
     <h2>Loja de vantagens</h2>
-    <span class="muted">ordenar por: menor custo</span>
+    <label class="ordenar-select">
+      <span>Ordenar por</span>
+      <select id="loja-ordenar">
+        <option value="custo-asc">Menor custo</option>
+        <option value="custo-desc">Maior custo</option>
+      </select>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </label>
   </div>
   <div class="store-grid" id="aluno-loja"></div>
 </section>

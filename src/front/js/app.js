@@ -53,7 +53,6 @@ const NAV_BY_STATE = {
   ALUNO: [
     {id:'aluno', label:'Início'},
     {id:'extrato', label:'Extrato completo'},
-    {id:'perfil', label:'Meu perfil'},
   ],
   PROFESSOR: [
     {id:'professor', label:'Início'},
@@ -323,28 +322,40 @@ function loadAlunoScreen() {
       cupomEl.innerHTML = '<div class="empty-state">Você ainda não resgatou nenhuma vantagem.</div>';
     }
 
-    const lojaEl = document.getElementById('aluno-loja');
-    const vantagensOrdenadas = [...vantagens].sort((a, b) => a.custoMoedas - b.custoMoedas);
-    lojaEl.innerHTML = vantagensOrdenadas.map(v => {
-      const podeResgatar = aluno.saldoMoedas >= v.custoMoedas;
-      return `
-        <div class="reward-card">
-          <div class="reward-img">foto da vantagem</div>
-          <div class="reward-body">
-            <div class="reward-title">${v.descricao}</div>
-            <div class="reward-partner">${v.empresaParceira ? v.empresaParceira.nome : ''}</div>
-            <div class="reward-foot">
-              <div class="price"><svg class="coin" width="16" height="16"><use href="#coin-icon"/></svg> ${fmtMoeda(v.custoMoedas)}</div>
-              <button class="cta ${podeResgatar ? '' : 'locked'}" ${podeResgatar ? `onclick="resgatarVantagem(${v.id}, this)"` : 'disabled'}>
-                ${podeResgatar ? 'Resgatar' : 'Saldo insuficiente'}
-              </button>
-            </div>
-          </div>
-        </div>`;
-    }).join('') || '<div class="empty-state">Nenhuma vantagem publicada ainda.</div>';
+    lojaAlunoCache = aluno;
+    lojaVantagensCache = vantagens;
+    renderLojaVantagens();
   }).catch(err => {
     document.getElementById('aluno-recebidas').innerHTML = '<div class="empty-state">Erro ao carregar: ' + err.message + '</div>';
   });
+}
+
+let lojaAlunoCache = null;
+let lojaVantagensCache = [];
+
+function renderLojaVantagens() {
+  const lojaEl = document.getElementById('aluno-loja');
+  if (!lojaEl || !lojaAlunoCache) return;
+  const ordenarSelect = document.getElementById('loja-ordenar');
+  const direcao = ordenarSelect && ordenarSelect.value === 'custo-desc' ? -1 : 1;
+  const vantagensOrdenadas = [...lojaVantagensCache].sort((a, b) => direcao * (a.custoMoedas - b.custoMoedas));
+  lojaEl.innerHTML = vantagensOrdenadas.map(v => {
+    const podeResgatar = lojaAlunoCache.saldoMoedas >= v.custoMoedas;
+    return `
+      <div class="reward-card">
+        <div class="reward-img">foto da vantagem</div>
+        <div class="reward-body">
+          <div class="reward-title">${v.descricao}</div>
+          <div class="reward-partner">${v.empresaParceira ? v.empresaParceira.nome : ''}</div>
+          <div class="reward-foot">
+            <div class="price"><svg class="coin" width="16" height="16"><use href="#coin-icon"/></svg> ${fmtMoeda(v.custoMoedas)}</div>
+            <button class="cta ${podeResgatar ? '' : 'locked'}" ${podeResgatar ? `onclick="resgatarVantagem(${v.id}, this)"` : 'disabled'}>
+              ${podeResgatar ? 'Resgatar' : 'Saldo insuficiente'}
+            </button>
+          </div>
+        </div>
+      </div>`;
+  }).join('') || '<div class="empty-state">Nenhuma vantagem publicada ainda.</div>';
 }
 
 function resgatarVantagem(vantagemId, btn) {
@@ -547,6 +558,7 @@ function attachEventListeners() {
   document.getElementById('notif-bell').addEventListener('click', toggleNotifPanel);
   document.querySelector('.notif-panel-header a').addEventListener('click', marcarTodasComoLidas);
   document.getElementById('logout-btn').addEventListener('click', logout);
+  document.getElementById('loja-ordenar').addEventListener('change', renderLojaVantagens);
 
   document.addEventListener('click', e => {
     const wrap = document.getElementById('notif-wrap');
