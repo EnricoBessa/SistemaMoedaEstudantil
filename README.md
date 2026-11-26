@@ -93,7 +93,7 @@ O **Sistema de Moeda Estudantil** busca incentivar o reconhecimento do mérito e
 ### Configurando o login com Google (opcional em dev)
 1. Crie um **OAuth Client ID** do tipo "Web application" no [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
 2. Em "Authorized JavaScript origins", adicione `http://localhost:8080` (e a URL do Render em produção).
-3. Exporte `GOOGLE_CLIENT_ID` com o Client ID antes de rodar a aplicação. Sem essa variável, o botão "Entrar com Google" simplesmente não aparece — o resto do sistema funciona normalmente.
+3. Cole o Client ID na variável `GOOGLE_CLIENT_ID` do seu arquivo `.env` local (veja "Configurar as variáveis de ambiente" abaixo) e rode `.\scripts\load-env.ps1` antes de subir a aplicação. Sem essa variável, o botão "Entrar com Google" simplesmente não aparece — o resto do sistema funciona normalmente.
 
 ---
 
@@ -113,7 +113,18 @@ docker compose up -d
 ```
 Isso sobe um container Postgres na porta `5432` (`moedaestudantil`/`moedaestudantil`/`moedaestudantil`), com os dados persistidos em volume Docker. O schema é versionado pelo **Flyway** (`src/back/db/migration`); o Hibernate só valida que as entidades batem com as tabelas (`ddl-auto=validate`).
 
-### 3. Rodando a aplicação
+### 3. Configurar as variáveis de ambiente (senhas, chaves, etc.)
+Essas informações (JWT secret, SMTP, Google Client ID) nunca ficam no código nem no Git — cada máquina tem seu próprio arquivo `.env` local:
+
+```powershell
+Copy-Item .env.example .env
+# edite o .env e preencha os valores reais (veja as seções de e-mail e Google abaixo)
+.\scripts\load-env.ps1
+```
+
+Rode `.\scripts\load-env.ps1` toda vez que abrir um terminal novo, antes do `mvn spring-boot:run` — ele só carrega as variáveis naquela sessão do PowerShell. O arquivo `.env` está no `.gitignore`: ele nunca é commitado, então depois de clonar o repositório em outra máquina (ou puxar do GitHub de novo), basta repetir esse passo 3 para a aplicação voltar a funcionar.
+
+### 4. Rodando a aplicação
 ```bash
 mvn spring-boot:run
 ```
@@ -121,14 +132,14 @@ Ou, pela IDE (IntelliJ/VS Code com extensão Java), importe como projeto Maven e
 
 A aplicação sobe em `http://localhost:8080` — abrindo essa URL no navegador aparece o site completo (login, cadastro, dashboards de aluno/professor/empresa). Um `DataSeeder` popula automaticamente instituições, um aluno, um professor, uma empresa parceira e vantagens de exemplo assim que a aplicação sobe.
 
-### 4. Contas de demonstração (senha `123456` para todas)
+### 5. Contas de demonstração (senha `123456` para todas)
 | Papel | E-mail |
 |---|---|
 | Aluno | `camila.duarte@puc.br` |
 | Professor | `ricardo.alves@puc.br` |
 | Empresa parceira | `contato@ru.com.br` |
 
-### 5. Testando os endpoints diretamente (opcional)
+### 6. Testando os endpoints diretamente (opcional)
 ```bash
 curl http://localhost:8080/api/alunos
 curl -X POST http://localhost:8080/api/auth/login -H "Content-Type: application/json" -d "{\"email\":\"camila.duarte@puc.br\",\"senha\":\"123456\",\"tipo\":\"ALUNO\"}"

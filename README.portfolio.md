@@ -1,89 +1,89 @@
 <div align="center">
 
-# 🪙 Sistema de Moeda Estudantil
+# 🪙 Student Coin System
 
-**Plataforma de reconhecimento de mérito acadêmico via moeda virtual**, onde professores recompensam alunos por desempenho e os alunos trocam o saldo por vantagens oferecidas por empresas parceiras.
+**An academic merit recognition platform built around a virtual currency**, where professors reward students for performance and students redeem their balance for perks offered by partner companies.
 
-[![App no ar](https://img.shields.io/badge/demo-online-brightgreen)](https://sistemamoedaestudantil-7khl.onrender.com)
+[![Live demo](https://img.shields.io/badge/demo-online-brightgreen)](https://sistemamoedaestudantil-7khl.onrender.com)
 ![Java](https://img.shields.io/badge/Java-17-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3-green)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)
 ![JWT](https://img.shields.io/badge/Auth-JWT%20%2B%20BCrypt-lightgrey)
 
-**[🔗 Ver demo ao vivo](https://sistemamoedaestudantil-7khl.onrender.com)**
+**[🔗 View live demo](https://sistemamoedaestudantil-7khl.onrender.com)**
 
 </div>
 
 ---
 
-## Sobre o projeto
+## About the project
 
-Sistema full-stack que modela um fluxo real de três perfis de usuário — **Professor**, **Aluno** e **Empresa Parceira** — com regras de negócio não triviais: saldo de moedas acumulável por semestre, envio rastreável com motivo obrigatório, resgate de vantagens com geração de cupom único e notificações assíncronas.
+A full-stack system modeling a real three-role workflow — **Professor**, **Student**, and **Partner Company** — with non-trivial business rules: a per-semester cumulative coin balance, traceable coin transfers with a mandatory reason, perk redemption with unique coupon generation, and asynchronous notifications.
 
-Construído do zero com arquitetura em camadas (Controller → Service → Repository), persistência versionada por migrations e autenticação stateless via JWT.
+Built from scratch with a layered architecture (Controller → Service → Repository), migration-versioned persistence, and stateless JWT authentication.
 
-## ✨ Principais funcionalidades
+## ✨ Key features
 
-* Cadastro e autenticação de três perfis distintos (Aluno, Professor, Empresa Parceira), com JWT e senhas protegidas por BCrypt — ou login/cadastro em um clique via **Google (OAuth)**, com o cadastro pré-preenchido a partir da conta Google.
-* Foto de perfil (avatar) do usuário, com upload de imagem exibido em toda a aplicação.
-* Distribuição de moedas por professores, com saldo semestral acumulável (1.000 moedas/semestre) e motivo obrigatório por envio.
-* Extrato de transações para aluno e professor.
-* Catálogo de vantagens cadastrado por empresas parceiras e resgate pelo aluno, com desconto automático de saldo e geração de código de cupom.
-* Notificações internas assíncronas e e-mails reais (SMTP) ao receber moeda e ao resgatar vantagem (evento + listener `@Async`).
+* Sign-up and authentication for three distinct roles (Student, Professor, Partner Company), with JWT and BCrypt-hashed passwords — or one-click login/sign-up via **Google (OAuth)**, with the sign-up form pre-filled from the Google account.
+* User profile picture (avatar) with image upload, shown across the whole application.
+* Coin distribution by professors, with a cumulative per-semester balance (1,000 coins/semester) and a mandatory reason for every transfer.
+* Transaction history for both students and professors.
+* Perk catalog managed by partner companies and redeemed by students, with automatic balance deduction and unique coupon code generation.
+* Asynchronous in-app notifications and real e-mails (SMTP) on receiving coins and redeeming a perk (event + `@Async` listener).
 
-## 🏗️ Arquitetura
+## 🏗️ Architecture
 
-* **Padrão MVC** com separação clara entre `controllers`, `modelos` (entidades JPA), `repositorios` (Spring Data JPA) e `servicos` (regras de negócio).
-* **Autenticação e segurança:** Spring Security + filtro JWT customizado (`JwtAuthenticationFilter`) e hashing de senha com `BCryptPasswordEncoder`.
-* **Persistência:** PostgreSQL com schema versionado por **Flyway**, Hibernate apenas validando o mapeamento (`ddl-auto=validate`) — nunca alterando o schema em produção.
-* **Eventos assíncronos:** notificações e e-mails (SMTP) desacoplados das transações via `ApplicationEventListener` + `@Async`.
-* **Upload de arquivos:** foto de perfil (avatar) enviada via `multipart/form-data`, validada por tipo/tamanho e servida como recurso estático em `/uploads/**`.
-* **Login social:** verificação de ID token do Google (Google Identity Services) no backend, com vínculo automático a contas existentes e cadastro assistido para contas novas.
-* **Deploy:** containerizado com Docker, publicado no Render com banco Postgres gerenciado e redeploy automático a cada push (CI via GitHub Actions rodando `mvn package`).
+* **MVC pattern** with a clear separation between `controllers`, `models` (JPA entities), `repositories` (Spring Data JPA), and `services` (business rules).
+* **Authentication & security:** Spring Security + a custom JWT filter (`JwtAuthenticationFilter`) and password hashing with `BCryptPasswordEncoder`.
+* **Persistence:** PostgreSQL with a schema versioned by **Flyway**; Hibernate only validates the mapping (`ddl-auto=validate`) — it never alters the schema in production.
+* **Asynchronous events:** notifications and e-mails (SMTP) decoupled from transactions via `ApplicationEventListener` + `@Async`.
+* **File uploads:** profile picture (avatar) uploaded via `multipart/form-data`, validated by type/size, and served as a static resource at `/uploads/**`.
+* **Social login:** server-side verification of Google ID tokens (Google Identity Services), with automatic linking to existing accounts and an assisted sign-up flow for new ones.
+* **Deployment:** containerized with Docker, deployed on Render with a managed Postgres database and automatic redeploy on every push (CI via GitHub Actions running `mvn package`).
 
-### Documentação de arquitetura
-* [Diagrama de Classes](./Documentos/DiagramaDeClasse.png)
-* [Diagrama de Componentes](./Documentos/DiagramaDeComponente.png)
-* [Diagrama Entidade-Relacionamento](./Documentos/Diagrama%20Entidade-Relacionamento.png)
-* [Diagrama de Sequência — Envio de Moedas](./Documentos/Diagrama%20de%20Sequência%20—%20Envio%20de%20Moedas.png)
-* [Diagrama de Sequência — Resgate de Vantagem](./Documentos/Diagrama%20de%20Sequência%20—%20Resgate%20de%20Vantagem.png)
-* [Diagrama de Implantação](./Documentos/Diagrama%20de%20Implantação.png)
+### Architecture documentation
+* [Class Diagram](./Documentos/DiagramaDeClasse.png)
+* [Component Diagram](./Documentos/DiagramaDeComponente.png)
+* [Entity-Relationship Diagram](./Documentos/Diagrama%20Entidade-Relacionamento.png)
+* [Sequence Diagram — Sending Coins](./Documentos/Diagrama%20de%20Sequência%20—%20Envio%20de%20Moedas.png)
+* [Sequence Diagram — Redeeming a Perk](./Documentos/Diagrama%20de%20Sequência%20—%20Resgate%20de%20Vantagem.png)
+* [Deployment Diagram](./Documentos/Diagrama%20de%20Implantação.png)
 
-## 🛠️ Stack técnica
+## 🛠️ Tech stack
 
-| Camada | Tecnologia |
+| Layer | Technology |
 |---|---|
-| Linguagem | Java 17 |
+| Language | Java 17 |
 | Framework | Spring Boot (Web, Data JPA, Security) |
-| Autenticação | JWT + BCrypt |
-| Banco de dados | PostgreSQL + Flyway |
-| Front-end | HTML/CSS/JS estático servido pelo Spring |
-| Infraestrutura | Docker, Docker Compose, Render, GitHub Actions |
+| Authentication | JWT + BCrypt |
+| Database | PostgreSQL + Flyway |
+| Front-end | Static HTML/CSS/JS served by Spring |
+| Infrastructure | Docker, Docker Compose, Render, GitHub Actions |
 
-## 🚀 Rodando localmente
+## 🚀 Running locally
 
-Pré-requisitos: JDK 17+, Maven 3.8+ e Docker Desktop.
+Prerequisites: JDK 17+, Maven 3.8+, and Docker Desktop.
 
 ```bash
-# 1. Subir o banco PostgreSQL
+# 1. Start the PostgreSQL database
 docker compose up -d
 
-# 2. Rodar a aplicação (lê o schema via Flyway automaticamente)
+# 2. Run the application (schema loaded automatically via Flyway)
 mvn spring-boot:run
 ```
 
-A aplicação sobe em `http://localhost:8080`, já populada com dados de demonstração por um `DataSeeder` (um aluno, um professor, uma empresa parceira e vantagens de exemplo).
+The app comes up at `http://localhost:8080`, already seeded with demo data by a `DataSeeder` (one student, one professor, one partner company, and sample perks).
 
-Guia completo de setup, variáveis de ambiente e troubleshooting: [`SETUP.md`](./SETUP.md) e [`deploy-docs/`](./deploy-docs/).
+Full setup guide, environment variables, and troubleshooting: [`SETUP.md`](./SETUP.md) and [`deploy-docs/`](./deploy-docs/).
 
 ## 🗺️ Roadmap
 
-* [ ] Cobertura de testes automatizados (unitários e de integração).
+* [ ] Automated test coverage (unit and integration tests).
 
 ---
 
 <div align="center">
 
-Desenvolvido por **[seu nome]** · Engenharia de Software — PUC Minas
+Built by **Enrico Bessa** · Software Engineering — PUC Minas
 
 </div>

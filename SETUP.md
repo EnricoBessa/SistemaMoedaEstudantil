@@ -62,7 +62,10 @@ A aplicação sobe em `http://localhost:8080` e o front-end (HTML/JS estático)
 
 Por padrão a aplicação já aponta para o Postgres do `docker-compose.yml`
 (`localhost:5432`, banco/usuário/senha `moedaestudantil`) e usa uma chave JWT
-de desenvolvimento. Pra mudar algo, defina antes de rodar:
+de desenvolvimento. Essas variáveis (e as sensíveis, como o Client ID do
+Google e as credenciais de e-mail) ficam no arquivo `.env` local — copie
+`.env.example` para `.env`, preencha, e rode `.\scripts\load-env.ps1` antes
+de `mvn spring-boot:run`. O `.env` nunca é commitado (está no `.gitignore`).
 
 | Variável | Para que serve | Padrão |
 |---|---|---|
@@ -73,6 +76,9 @@ de desenvolvimento. Pra mudar algo, defina antes de rodar:
 | `DB_PASSWORD` | senha do banco | `moedaestudantil` |
 | `JWT_SECRET` | chave usada pra assinar o token JWT | valor de desenvolvimento, **trocar em produção** |
 | `JWT_EXPIRACAO_MINUTOS` | validade do token, em minutos | `120` |
+| `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM` | SMTP para e-mails reais (notificações e cupom de resgate) | Mailtrap sandbox |
+| `GOOGLE_CLIENT_ID` | Client ID do login com Google | vazio (botão some se não configurado) |
+| `UPLOAD_DIR` | pasta onde ficam as fotos de perfil enviadas | `uploads` |
 
 ## 4. Como testar
 
