@@ -1,5 +1,6 @@
 package com.moedaestudantil.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -14,6 +15,12 @@ public class EmpresaParceira {
     private String email;
     private String senha;
 
+    @Column(name = "google_id")
+    private String googleId;
+
+    @Column(name = "foto_perfil")
+    private String fotoPerfil;
+
     public EmpresaParceira() {}
 
     // Getters e Setters
@@ -25,4 +32,8 @@ public class EmpresaParceira {
     public void setEmail(String email) { this.email = email; }
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
+    public String getGoogleId() { return googleId; }
+    public void setGoogleId(String googleId) { this.googleId = googleId; }
+    public String getFotoPerfil() { return fotoPerfil; }
+    public void setFotoPerfil(String fotoPerfil) { this.fotoPerfil = fotoPerfil; }
 }

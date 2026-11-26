@@ -1,6 +1,7 @@
 const API = '/api';
 let session = JSON.parse(localStorage.getItem('besiktas_session') || 'null');
 let loginRole = 'ALUNO';
+let googleCredencialPendente = null;
 
 function api(path, options) {
   options = options || {};
@@ -8,7 +9,21 @@ function api(path, options) {
   if (session && session.token) {
     options.headers.Authorization = 'Bearer ' + session.token;
   }
-  return fetch(API + path, options).then(async res => {
+  return fetch(API + path, options).then(parseApiResponse);
+}
+
+// Para upload de arquivo: sem Content-Type manual, o navegador define o
+// multipart/form-data com o boundary correto sozinho.
+function apiUpload(path, formData) {
+  const headers = {};
+  if (session && session.token) {
+    headers.Authorization = 'Bearer ' + session.token;
+  }
+  return fetch(API + path, { method: 'POST', headers, body: formData }).then(parseApiResponse);
+}
+
+function parseApiResponse(res) {
+  return (async () => {
     const isJson = (res.headers.get('content-type') || '').includes('application/json');
     const body = isJson ? await res.json().catch(() => null) : await res.text();
     if (!res.ok) {
@@ -16,7 +31,7 @@ function api(path, options) {
       throw new Error(msg);
     }
     return body;
-  });
+  })();
 }
 
 function fmtMoeda(n) { return Number(n || 0).toLocaleString('pt-BR'); }
@@ -66,6 +81,28 @@ function renderNav() {
   const isAluno = session && session.tipo === 'ALUNO';
   document.getElementById('notif-wrap').style.display = isAluno ? 'flex' : 'none';
   if (isAluno) loadNotificacoesBadge();
+
+  renderTopbarAvatar();
+}
+
+function iniciais(nome) {
+  return (nome || '?').trim().split(/\s+/).slice(0, 2).map(p => p[0].toUpperCase()).join('');
+}
+
+function renderTopbarAvatar() {
+  const el = document.getElementById('topbar-avatar');
+  if (!session) {
+    el.style.display = 'none';
+    return;
+  }
+  el.style.display = 'flex';
+  el.classList.toggle('topbar-avatar--clickable', session.tipo === 'ALUNO');
+  el.onclick = session.tipo === 'ALUNO' ? () => showScreen('perfil') : null;
+  if (session.usuario.fotoPerfil) {
+    el.innerHTML = `<img src="${session.usuario.fotoPerfil}" alt="Foto de perfil" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+  } else {
+    el.textContent = iniciais(session.usuario.nome);
+  }
 }
 
 // ---------- NOTIFICAÇÕES ----------
@@ -364,6 +401,27 @@ function loadPerfilScreen() {
     document.getElementById('perfil-email').value = aluno.email || '';
     document.getElementById('perfil-curso').value = aluno.curso || '';
     document.getElementById('perfil-endereco').value = aluno.endereco || '';
+    document.getElementById('perfil-avatar-preview').src = aluno.fotoPerfil || AVATAR_PLACEHOLDER;
+  });
+}
+
+const AVATAR_PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 84">' +
+  '<circle cx="42" cy="42" r="42" fill="#e7def0"/>' +
+  '<circle cx="42" cy="34" r="16" fill="#9b7bb8"/>' +
+  '<path d="M10 80c4-20 22-30 32-30s28 10 32 30" fill="#9b7bb8"/>' +
+  '</svg>'
+);
+
+function uploadAvatar(arquivo) {
+  const cpf = session.usuario.cpf;
+  const formData = new FormData();
+  formData.append('arquivo', arquivo);
+  return apiUpload('/alunos/' + cpf + '/avatar', formData).then(aluno => {
+    session.usuario.fotoPerfil = aluno.fotoPerfil;
+    saveSession();
+    renderTopbarAvatar();
+    return aluno;
   });
 }
 
@@ -533,6 +591,7 @@ function attachEventListeners() {
     const btn = document.getElementById('cadastro-aluno-submit');
     const errorEl = document.getElementById('cadastro-aluno-error');
     errorEl.style.display = 'none';
+    const googleId = document.getElementById('ca-google-id').value;
     const payload = {
       nome: document.getElementById('ca-nome').value.trim(),
       email: document.getElementById('ca-email').value.trim(),
@@ -542,15 +601,18 @@ function attachEventListeners() {
       curso: document.getElementById('ca-curso').value.trim(),
       endereco: document.getElementById('ca-endereco').value.trim(),
       instituicao: { id: Number(document.getElementById('ca-instituicao').value) },
+      googleId: googleId || null,
     };
-    if (!payload.nome || !payload.email || !payload.cpf || !payload.senha) {
+    if (!payload.nome || !payload.email || !payload.cpf || (!payload.senha && !googleId)) {
       errorEl.textContent = 'Preencha nome, e-mail, CPF e senha.';
       errorEl.style.display = 'block';
       return;
     }
     setBtnLoading(btn, true, 'Criando conta...');
     api('/alunos', { method: 'POST', body: JSON.stringify(payload) })
-      .then(() => api('/auth/login', { method: 'POST', body: JSON.stringify({ email: payload.email, senha: payload.senha, tipo: 'ALUNO' }) }))
+      .then(() => googleId
+        ? api('/auth/google', { method: 'POST', body: JSON.stringify({ credential: googleCredencialPendente, tipo: 'ALUNO' }) })
+        : api('/auth/login', { method: 'POST', body: JSON.stringify({ email: payload.email, senha: payload.senha, tipo: 'ALUNO' }) }))
       .then(data => {
         session = { tipo: data.tipo, usuario: data.usuario, token: data.token };
         saveSession();
@@ -567,20 +629,24 @@ function attachEventListeners() {
     const btn = document.getElementById('cadastro-empresa-submit');
     const errorEl = document.getElementById('cadastro-empresa-error');
     errorEl.style.display = 'none';
+    const googleId = document.getElementById('ce-google-id').value;
     const payload = {
       nome: document.getElementById('ce-nome').value.trim(),
       cnpj: document.getElementById('ce-cnpj').value.trim(),
       email: document.getElementById('ce-email').value.trim(),
       senha: document.getElementById('ce-senha').value,
+      googleId: googleId || null,
     };
-    if (!payload.nome || !payload.cnpj || !payload.email || !payload.senha) {
+    if (!payload.nome || !payload.cnpj || !payload.email || (!payload.senha && !googleId)) {
       errorEl.textContent = 'Preencha todos os campos.';
       errorEl.style.display = 'block';
       return;
     }
     setBtnLoading(btn, true, 'Criando conta...');
     api('/empresas', { method: 'POST', body: JSON.stringify(payload) })
-      .then(() => api('/auth/login', { method: 'POST', body: JSON.stringify({ email: payload.email, senha: payload.senha, tipo: 'EMPRESA' }) }))
+      .then(() => googleId
+        ? api('/auth/google', { method: 'POST', body: JSON.stringify({ credential: googleCredencialPendente, tipo: 'EMPRESA' }) })
+        : api('/auth/login', { method: 'POST', body: JSON.stringify({ email: payload.email, senha: payload.senha, tipo: 'EMPRESA' }) }))
       .then(data => {
         session = { tipo: data.tipo, usuario: data.usuario, token: data.token };
         saveSession();
@@ -591,6 +657,25 @@ function attachEventListeners() {
         errorEl.style.display = 'block';
       })
       .finally(() => setBtnLoading(btn, false));
+  });
+
+  document.getElementById('perfil-avatar-input').addEventListener('change', e => {
+    const arquivo = e.target.files[0];
+    if (!arquivo) return;
+    const errorEl = document.getElementById('perfil-avatar-error');
+    const preview = document.getElementById('perfil-avatar-preview');
+    errorEl.style.display = 'none';
+    preview.style.opacity = '.5';
+    uploadAvatar(arquivo)
+      .then(aluno => { preview.src = aluno.fotoPerfil; })
+      .catch(err => {
+        errorEl.textContent = err.message;
+        errorEl.style.display = 'block';
+      })
+      .finally(() => {
+        preview.style.opacity = '1';
+        e.target.value = '';
+      });
   });
 
   document.getElementById('perfil-submit').addEventListener('click', () => {
@@ -700,10 +785,77 @@ function loadViews() {
     });
 }
 
+// ---------- LOGIN/CADASTRO COM GOOGLE ----------
+// Só existe uma tela visível por vez nesta SPA, então o mesmo botão/callback do
+// Google serve login (com o papel ativo) e os dois cadastros, lendo o contexto da
+// tela ativa no momento em que o usuário conclui o popup do Google.
+function contextoGoogleAtual() {
+  const ativo = document.querySelector('.screen.active');
+  if (ativo && ativo.id === 'cadastro-aluno') return { tipo: 'ALUNO', errorId: 'cadastro-aluno-error' };
+  if (ativo && ativo.id === 'cadastro-empresa') return { tipo: 'EMPRESA', errorId: 'cadastro-empresa-error' };
+  return { tipo: loginRole, errorId: 'login-google-error' };
+}
+
+function preencherComGoogle(tipo, google) {
+  if (tipo === 'ALUNO') {
+    showScreen('cadastro-aluno');
+    document.getElementById('ca-nome').value = google.nome || '';
+    document.getElementById('ca-email').value = google.email || '';
+    document.getElementById('ca-google-id').value = google.googleId;
+    document.getElementById('ca-google-hint').style.display = 'block';
+    document.getElementById('ca-senha-campo').style.display = 'none';
+  } else if (tipo === 'EMPRESA') {
+    showScreen('cadastro-empresa');
+    document.getElementById('ce-nome').value = google.nome || '';
+    document.getElementById('ce-email').value = google.email || '';
+    document.getElementById('ce-google-id').value = google.googleId;
+    document.getElementById('ce-google-hint').style.display = 'block';
+    document.getElementById('ce-senha-campo').style.display = 'none';
+  }
+}
+
+function tratarRespostaGoogleCredential(response) {
+  const { tipo, errorId } = contextoGoogleAtual();
+  const errorEl = document.getElementById(errorId);
+  errorEl.style.display = 'none';
+  googleCredencialPendente = response.credential;
+  api('/auth/google', { method: 'POST', body: JSON.stringify({ credential: response.credential, tipo }) })
+    .then(data => {
+      if (data.token) {
+        session = { tipo: data.tipo, usuario: data.usuario, token: data.token };
+        saveSession();
+        routeAfterLogin();
+      } else if (data.precisaCompletarCadastro) {
+        preencherComGoogle(data.tipo, data.google);
+      }
+    })
+    .catch(err => {
+      errorEl.textContent = err.message;
+      errorEl.style.display = 'block';
+    });
+}
+
+function initGoogleSignIn(tentativas) {
+  return api('/auth/google/client-id').then(({ clientId }) => {
+    if (!clientId) return;
+    if (typeof google === 'undefined' || !google.accounts) {
+      // O script do GIS carrega com async/defer; se ainda não rodou, tenta de novo em breve.
+      if ((tentativas || 0) < 10) setTimeout(() => initGoogleSignIn((tentativas || 0) + 1), 300);
+      return;
+    }
+    google.accounts.id.initialize({ client_id: clientId, callback: tratarRespostaGoogleCredential });
+    ['google-signin-login', 'google-signin-cadastro-aluno', 'google-signin-cadastro-empresa'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) google.accounts.id.renderButton(el, { theme: 'outline', size: 'large', text: 'signin_with', width: 280 });
+    });
+  }).catch(() => {});
+}
+
 loadViews().then(() => {
   attachEventListeners();
   renderNav();
   loadInstituicoesSelect();
+  initGoogleSignIn();
   const hashId = location.hash.slice(1);
   if (session && NAV_BY_STATE[session.tipo]) {
     renderNav();

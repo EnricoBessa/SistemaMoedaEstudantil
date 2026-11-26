@@ -7,14 +7,18 @@
         <h2 style="margin:0 0 4px;">Criar cadastro de aluno</h2>
         <p class="muted" style="margin:0 0 22px;">Leva menos de 2 minutos</p>
       </div>
+      <div id="google-signin-cadastro-aluno" style="display:flex; justify-content:center; margin-bottom:14px;"></div>
+      <p class="hint" id="ca-google-hint" style="display:none; text-align:center; margin-bottom:14px;">✅ Nome e e-mail preenchidos com sua conta Google. Só falta completar o resto.</p>
+      <div class="divisor-ou"><span>ou preencha manualmente</span></div>
       <form id="cadastro-aluno-form">
         <p class="error-msg" id="cadastro-aluno-error" style="display:none;"></p>
+        <input type="hidden" id="ca-google-id">
         <div class="grid cols-2" style="gap:14px;">
           <div class="field"><label>Nome completo</label><input id="ca-nome" placeholder="Camila Duarte" required></div>
           <div class="field"><label>E-mail</label><input type="email" id="ca-email" placeholder="voce@instituicao.edu.br" required></div>
           <div class="field"><label>CPF</label><input id="ca-cpf" placeholder="00000000000" required></div>
           <div class="field"><label>RG</label><input id="ca-rg" placeholder="MG1234567"></div>
-          <div class="field"><label>Senha</label><input type="password" id="ca-senha" placeholder="••••••••" required></div>
+          <div class="field" id="ca-senha-campo"><label>Senha</label><input type="password" id="ca-senha" placeholder="••••••••"></div>
           <div class="field"><label>Curso</label><input id="ca-curso" placeholder="Eng. de Software"></div>
         </div>
         <div class="field"><label>Endereço</label><input id="ca-endereco" placeholder="Rua, número, bairro, cidade"></div>

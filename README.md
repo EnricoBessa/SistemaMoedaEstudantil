@@ -12,7 +12,7 @@ O **Sistema de Moeda Estudantil** busca incentivar o reconhecimento do mérito e
 
 ---
 
-## Entregas da Sprint 1 (Lab03S01)
+## Entregas da Release 01 (Sprints 1 a 3)
 
 ### 1. Histórias do Usuário (User Stories)
 
@@ -29,7 +29,7 @@ O **Sistema de Moeda Estudantil** busca incentivar o reconhecimento do mérito e
   * *Como* professor, *quero* consultar meu extrato de envio de moedas e verificar meu saldo corrente acumulável (1.000 moedas/semestre).
 
 * **US05 - Consulta de Extrato e Notificação (Aluno)**
-  * *Como* aluno, *quero* receber notificações por e-mail a cada nova moeda recebida e consultar meu extrato de saldo, recebimentos e trocas.
+  * *Como* aluno, *quero* receber notificações a cada nova moeda recebida e consultar meu extrato de saldo, recebimentos e trocas.
 
 * **US06 - Cadastro de Vantagens**
   * *Como* empresa parceira, *quero* cadastrar vantagens com foto, descrição e custo em moedas, *para* disponibilizá-las aos alunos.
@@ -37,9 +37,7 @@ O **Sistema de Moeda Estudantil** busca incentivar o reconhecimento do mérito e
 * **US07 - Resgate de Vantagens**
   * *Como* aluno, *quero* trocar meu saldo de moedas por uma vantagem cadastrada, *para* receber um cupom por e-mail para resgate presencial.
 
----
-
-### 2. Modelagem UML
+### 2. Modelagem UML — Sprint 1 (Lab03S01)
 
 #### Diagrama de Casos de Uso
 ![Diagrama de Casos de Uso](./Documentos/DiagramaCasoDeUso.png)
@@ -50,92 +48,99 @@ O **Sistema de Moeda Estudantil** busca incentivar o reconhecimento do mérito e
 #### Diagrama de Componentes
 ![Diagrama de Componentes](./Documentos/DiagramaDeComponente.png)
 
----
-
-## Entregas da Sprint 2 (Lab03S02)
-
-### 1. Modelo Entidade-Relacionamento (Modelo ER)
-* Definição e mapeamento do esquema relacional contemplando as entidades: `Usuario`, `Aluno`, `Professor`, `Empresa Parceira`, `Instituição`, `Vantagem` e `Transação`.
+### 3. Modelo ER e Persistência — Sprint 2 (Lab03S02)
+* Definição e mapeamento do esquema relacional contemplando as entidades: `Usuario`, `Aluno`, `Professor`, `EmpresaParceira`, `Instituicao`, `Vantagem` e `Transacao`.
   * ![Diagrama Entidade-Relacionamento](./Documentos/Diagrama%20Entidade-Relacionamento.png)
+* Utilização de **Spring Data JPA / Hibernate** para o mapeamento objeto-relacional (ORM), com o padrão de repositórios (`JpaRepository`) para desacoplamento e operações de CRUD seguras.
 
-### 2. Diagramas de Sequência
-* **Envio de Moedas (Professor -> Aluno):**
-  * ![Diagrama de Sequência - Envio de Moedas](./Documentos/Diagrama%20de%20Sequência%20—%20Envio%20de%20Moedas.png)
-* **Resgate de Vantagens (Aluno -> Empresa Parceira):**
-  * ![Diagrama de Sequência - Resgate de Vantagem](./Documentos/Diagrama%20de%20Sequência%20—%20Resgate%20de%20Vantagem.png)
-
-### 3. Estratégia de Acesso ao Banco de Dados e Persistência
-* Utilização de **Spring Data JPA / Hibernate** para o mapeamento objeto-relacional (ORM).
-* Implementação do padrão de repositórios (`JpaRepository`) para desacoplamento e operações de CRUD seguras.
+### 4. Arquitetura e Persistência — Sprint 3 (Lab03S03)
+* **Módulo Aluno & Empresa Parceira:** CRUD completo (`AlunoController`, `EmpresaParceiraController`).
+* **Módulo Professor & Vantagens:** Professores vinculados a instituições com saldo semestral acumulável; cadastro de vantagens por empresas parceiras.
+* **Módulo de Transações:** Envio de moedas (validação de saldo e mensagem obrigatória) e resgate de vantagens com geração automática de código de cupom único.
 
 ---
 
-## Entregas da Sprint 3 (Lab03S03)
+## Entregas da Release 02 (Sprint 4)
 
-### 1. Conclusão dos CRUDs e Regras de Negócio
-* **Módulo Aluno & Empresa Parceira:** Implementação completa dos endpoints de cadastro, listagem, atualização e remoção (`AlunoController`, `EmpresaParceiraController`).
-* **Módulo Professor & Vantagens:** Gestão de professores vinculados a instituições com saldo semestral acumulável e cadastro de vantagens por empresas parceiras.
-* **Módulo de Transações:** Lógica de envio de moedas (com validação de saldo e mensagem obrigatória) e resgate de vantagens com geração automática de código de cupom único.
+### 1. Diagramas de Sequência e Visão Geral de Interação (Lab04S01)
+* **Envio de Moedas (Professor → Aluno):**
+  * ![Diagrama de Sequência - Envio de Moedas](./Documentos/Diagrama%20de%20Sequência%20—%20Envio%20de%20Moedas.png)
+* **Resgate de Vantagens (Aluno → Empresa Parceira):**
+  * ![Diagrama de Sequência - Resgate de Vantagem](./Documentos/Diagrama%20de%20Sequência%20—%20Resgate%20de%20Vantagem.png)
+* **Diagrama de Visão Geral de Interação:**
+  * ![Diagrama de Visão Geral de Interação](./Documentos/Diagrama%20de%20Visão%20Geral%20de%20Interação.png)
 
-### 2. Tecnologias Utilizadas (Stack)
-* **Linguagem:** Java (JDK 17+)
-* **Framework:** Spring Boot (Spring Web, Spring Data JPA)
-* **Banco de Dados:** H2 / Relacional via ORM
-* **Arquitetura:** MVC (Model-View-Controller) com divisão clara entre Controllers, Models e Repositories.
+### 2. Diagrama de Implantação e Deploy em Nuvem (Lab04S02)
+* ![Diagrama de Implantação](./Documentos/Diagrama%20de%20Implantação.png)
+* Aplicação publicada e com deploy automático a cada push:
+  * **App no ar**: https://sistemamoedaestudantil-7khl.onrender.com
+  * **Hospedagem**: [Render](https://render.com) (Docker + Postgres gerenciado)
+  * **CI**: GitHub Actions roda build e testes (`mvn package`) a cada push/PR na `main`
+  * Veja [`deploy-docs/COMO-FUNCIONA.md`](./deploy-docs/COMO-FUNCIONA.md) e [`deploy-docs/TROUBLESHOOTING.md`](./deploy-docs/TROUBLESHOOTING.md)
+
+### 3. Avaliação Cruzada e Refatorações GRASP (Lab04S03)
+* **Pendente** — ver seção "O que ainda falta" abaixo.
+
+---
+
+## Tecnologias Utilizadas (Stack)
+* **Linguagem:** Java 17 (JDK 17+)
+* **Framework:** Spring Boot (Spring Web, Spring Data JPA, Spring Security)
+* **Autenticação:** JWT (`JwtUtil`, `JwtAuthenticationFilter`) + senhas com hash **BCrypt**, com login/cadastro alternativo via **Google (Google Identity Services)**
+* **Banco de Dados:** PostgreSQL, versionado por **Flyway** (`src/back/db/migration`)
+* **Arquitetura:** MVC (Model-View-Controller), com separação em Controllers, Models/Entidades, Repositórios e Serviços
+
+### Configurando o login com Google (opcional em dev)
+1. Crie um **OAuth Client ID** do tipo "Web application" no [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+2. Em "Authorized JavaScript origins", adicione `http://localhost:8080` (e a URL do Render em produção).
+3. Exporte `GOOGLE_CLIENT_ID` com o Client ID antes de rodar a aplicação. Sem essa variável, o botão "Entrar com Google" simplesmente não aparece — o resto do sistema funciona normalmente.
 
 ---
 
 ## Como usar / rodar o projeto
 
-O projeto já está organizado como um projeto Maven padrão (`pom.xml` na raiz, código em `src/main/java/com/moedaestudantil/...`, front-end estático em `src/main/resources/static/index.html`). A pasta `src/back/` com as classes soltas antigas ficou obsoleta e pode ser apagada quando quiser.
+> ⚠️ O `pom.xml` define `src/back` como `sourceDirectory` — é esse o código-fonte real do projeto (layout não padrão, diferente do `src/main/java` do Maven), e é lá que ficam `controllers`, `modelos`, `repositorios`, `servicos`, `security`, `evento` e `db/migration`. O front-end estático fica em `src/front`.
 
 ### 1. Pré-requisitos
-* **JDK 17+** instalado (`java -version` para conferir)
-* **Maven 3.8+** instalado (`mvn -version` para conferir)
+* **JDK 17+** (`java -version`)
+* **Maven 3.8+** (`mvn -version`) — ou use o wrapper `mvnw`/`mvnw.cmd`, se presente
+* **Docker Desktop** — necessário para subir o banco PostgreSQL localmente
 
-### 2. Rodando a aplicação
+### 2. Subir o banco de dados (PostgreSQL via Docker)
 Na raiz do projeto:
+```bash
+docker compose up -d
+```
+Isso sobe um container Postgres na porta `5432` (`moedaestudantil`/`moedaestudantil`/`moedaestudantil`), com os dados persistidos em volume Docker. O schema é versionado pelo **Flyway** (`src/back/db/migration`); o Hibernate só valida que as entidades batem com as tabelas (`ddl-auto=validate`).
+
+### 3. Rodando a aplicação
 ```bash
 mvn spring-boot:run
 ```
-Ou, pela IDE (IntelliJ/VS Code com extensão Java), importe o projeto como Maven e execute a classe `SistemaMoedaEstudantilApplication` (método `main`).
+Ou, pela IDE (IntelliJ/VS Code com extensão Java), importe como projeto Maven e execute a classe principal (método `main`).
 
-A aplicação sobe em `http://localhost:8080` — abrindo essa URL no navegador já aparece o site completo (login, cadastro, dashboards de aluno/professor/empresa), servido pelo próprio Spring Boot. O console do H2 fica em `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:moedaestudantil`, usuário `sa`, sem senha).
+A aplicação sobe em `http://localhost:8080` — abrindo essa URL no navegador aparece o site completo (login, cadastro, dashboards de aluno/professor/empresa). Um `DataSeeder` popula automaticamente instituições, um aluno, um professor, uma empresa parceira e vantagens de exemplo assim que a aplicação sobe.
 
-Como o banco é H2 em memória, os dados somem a cada reinício — mas um `DataSeeder` (`src/main/java/com/moedaestudantil/config/DataSeeder.java`) popula automaticamente algumas instituições, um aluno, um professor, uma empresa parceira e duas vantagens assim que a aplicação sobe, então já dá pra testar o fluxo completo sem cadastrar nada manualmente.
-
-### 3. Contas de demonstração (senha `123456` para todas)
+### 4. Contas de demonstração (senha `123456` para todas)
 | Papel | E-mail |
 |---|---|
 | Aluno | `camila.duarte@puc.br` |
 | Professor | `ricardo.alves@puc.br` |
 | Empresa parceira | `contato@ru.com.br` |
 
-### 4. Testando os endpoints diretamente (opcional)
-A interface já cobre o uso normal, mas a API REST continua acessível para quem quiser testar via `curl`/Postman:
+### 5. Testando os endpoints diretamente (opcional)
 ```bash
 curl http://localhost:8080/api/alunos
 curl -X POST http://localhost:8080/api/auth/login -H "Content-Type: application/json" -d "{\"email\":\"camila.duarte@puc.br\",\"senha\":\"123456\",\"tipo\":\"ALUNO\"}"
 curl -X POST "http://localhost:8080/api/transacoes/enviar?professorCpf=11111111111&alunoCpf=22222222222&quantidade=100&motivo=Participacao"
 ```
 
-### 5. Limitações conhecidas (herdadas do escopo acadêmico original)
-* Senhas ficam em texto puro no banco (sem hashing) — adequado só para fins didáticos.
-* Login não gera token/sessão real no servidor; o front-end guarda o usuário logado no `localStorage` do navegador.
-* Não há envio real de e-mail (o enunciado pede notificação por e-mail ao aluno e à empresa parceira — isso ficou como próximo passo).
-* Upload de foto da vantagem não foi implementado (campo visual apenas).
-
 ---
 
-## Melhorias de infraestrutura (deploy)
+## O que ainda falta (checklist frente ao enunciado)
 
-A aplicação está publicada e acessível em produção, com deploy automático a cada push:
+* [ ] **Avaliação cruzada (Lab04S03).** Falta escolher um projeto de outro grupo da turma e produzir o relatório de análise crítica (arquitetura, organização do GitHub, dificuldade de setup pelo README, erros nos diagramas, erros de alinhamento modelo↔código).
+* [ ] **Refatorações GRASP documentadas via PR.** Falta identificar três trechos do próprio código para refatorar segundo padrões GRASP, abrir os Pull Requests no GitHub e documentar no relatório (código antes/depois, padrão aplicado, justificativa).
+* [ ] **Repositório GitHub atualizado.** Confirme que todas as versões dos diagramas UML e o código final estão de fato versionados e com histórico no GitHub antes da entrega.
 
-* **App no ar**: https://sistemamoedaestudantil-7khl.onrender.com
-* **Hospedagem**: [Render](https://render.com) (Docker + Postgres gerenciado)
-* **CI**: GitHub Actions roda build e testes (`mvn package`) a cada push/PR na `main`
-* **Deploy**: automático — o Render redeploya sozinho a cada push na `main`, sem passo manual
-
-Veja a documentação completa em [`deploy-docs/COMO-FUNCIONA.md`](./deploy-docs/COMO-FUNCIONA.md) (como o deploy funciona, como subir uma alteração nova) e [`deploy-docs/TROUBLESHOOTING.md`](./deploy-docs/TROUBLESHOOTING.md) (problemas comuns e como resolver).
-
----
+Itens já resolvidos apesar de ainda constarem como "limitação" em versões antigas deste README: autenticação com **JWT + BCrypt** (senha não fica mais em texto puro), banco **PostgreSQL** persistente (não é mais H2 em memória), **e-mail real via SMTP** para notificação de moedas recebidas e cupom de resgate (aluno e empresa parceira), e **upload real de foto** da vantagem (arquivo salvo em disco e servido em `/uploads/**`, configurável por `MAIL_HOST`/`MAIL_USERNAME`/`MAIL_PASSWORD`/`MAIL_FROM` e `UPLOAD_DIR`).

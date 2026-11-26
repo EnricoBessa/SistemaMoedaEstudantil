@@ -35,6 +35,26 @@ svg.defs{ position:absolute; width:0; height:0; }
 }
 .logout-btn:hover{ background:rgba(255,255,255,.2); }
 
+.topbar-avatar{
+  width:34px; height:34px; border-radius:50%; overflow:hidden;
+  border:2px solid rgba(255,255,255,.5); margin-right:10px; cursor:default;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.18); color:#fff; font-weight:700; font-size:13px;
+}
+.topbar-avatar--clickable{ cursor:pointer; }
+
+.divisor-ou{
+  display:flex; align-items:center; gap:10px; color:var(--ink-soft); font-size:12px;
+  margin:14px 0;
+}
+.divisor-ou::before, .divisor-ou::after{ content:''; flex:1; height:1px; background:#e4ddec; }
+
+.avatar-preview{
+  width:84px; height:84px; border-radius:50%; object-fit:cover;
+  background: linear-gradient(135deg, var(--purple-light), #fbf1da);
+  border:2px solid var(--purple-2);
+}
+
 .notif-wrap{ position:relative; display:flex; align-items:center; margin-right:14px; }
 .notif-bell{
   background:transparent; border:none; cursor:pointer; padding:4px; line-height:0;

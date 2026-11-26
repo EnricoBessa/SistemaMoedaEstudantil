@@ -14,6 +14,12 @@ public class Professor {
     private String departamento;
     private int saldoMoedas = 1000; // Começa com 1000 moedas por semestre
 
+    @Column(name = "google_id")
+    private String googleId;
+
+    @Column(name = "foto_perfil")
+    private String fotoPerfil;
+
     @ManyToOne
     @JoinColumn(name = "instituicao_id")
     private Instituicao instituicao;
@@ -35,4 +41,8 @@ public class Professor {
     public void setSaldoMoedas(int saldoMoedas) { this.saldoMoedas = saldoMoedas; }
     public Instituicao getInstituicao() { return instituicao; }
     public void setInstituicao(Instituicao instituicao) { this.instituicao = instituicao; }
+    public String getGoogleId() { return googleId; }
+    public void setGoogleId(String googleId) { this.googleId = googleId; }
+    public String getFotoPerfil() { return fotoPerfil; }
+    public void setFotoPerfil(String fotoPerfil) { this.fotoPerfil = fotoPerfil; }
 }
